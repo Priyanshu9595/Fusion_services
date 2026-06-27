@@ -17,6 +17,7 @@ const Login = () => {
     setError('');
     setLoading(true);
     setShowDelayedMessage(false);
+    const normalizedUsername = username.trim().toLowerCase();
 
     // Show a message if it takes longer than 3 seconds (Render cold start)
     const timeoutId = setTimeout(() => {
@@ -27,7 +28,7 @@ const Login = () => {
       const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username: normalizedUsername, password })
       });
       
       const data = await response.json();

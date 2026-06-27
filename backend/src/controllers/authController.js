@@ -3,7 +3,12 @@ const jwt = require('jsonwebtoken');
 const db = require('../database');
 
 const login = async (req, res) => {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
+    username = String(username || '').trim().toLowerCase();
+
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required' });
+    }
 
     try {
         const result = await db.query('SELECT * FROM Users WHERE username = $1', [username]);
@@ -27,9 +32,17 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
     let { username, password } = req.body;
+    username = String(username || '').trim().toLowerCase();
+
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required' });
+    }
+
+    if (password.length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
     
     // Domain Validation and Role Assignment
-    username = username.toLowerCase().trim();
     let assignedRole = 'staff';
     
     if (username.endsWith('@staff.co.in')) {

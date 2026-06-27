@@ -17,12 +17,25 @@ const Register = () => {
     setError('');
     setSuccess('');
     setLoading(true);
+    const normalizedUsername = username.trim().toLowerCase();
+
+    if (!normalizedUsername.endsWith('@staff.co.in')) {
+      setError('Email must end with @staff.co.in');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username: normalizedUsername, password })
       });
       
       const data = await response.json();
@@ -32,7 +45,7 @@ const Register = () => {
         const loginResponse = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
+          body: JSON.stringify({ username: normalizedUsername, password })
         });
         
         if (loginResponse.ok) {
