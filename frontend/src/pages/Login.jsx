@@ -23,12 +23,15 @@ const Login = () => {
     const timeoutId = setTimeout(() => {
       setShowDelayedMessage(true);
     }, 3000);
+    const controller = new AbortController();
+    const requestTimeoutId = setTimeout(() => controller.abort(), 70000);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: normalizedUsername, password })
+        body: JSON.stringify({ username: normalizedUsername, password }),
+        signal: controller.signal
       });
       
       const data = await response.json();
@@ -40,9 +43,12 @@ const Login = () => {
         setError(data.error || 'Login failed. Check your credentials.');
       }
     } catch (err) {
-      setError('Unable to connect to the server. Is it running?');
+      setError(err.name === 'AbortError'
+        ? 'Server response timed out. Please try again in a minute.'
+        : 'Unable to connect to the server. Is it running?');
     } finally {
       clearTimeout(timeoutId);
+      clearTimeout(requestTimeoutId);
       setLoading(false);
       setShowDelayedMessage(false);
     }

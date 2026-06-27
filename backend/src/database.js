@@ -3,15 +3,27 @@ const { Pool } = require('pg');
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/fusiondocs',
     ssl: { rejectUnauthorized: false },
-    connectionTimeoutMillis: 5000,
-    query_timeout: 15000
+    connectionTimeoutMillis: Number(process.env.DB_CONNECTION_TIMEOUT_MS || 8000),
+    query_timeout: Number(process.env.DB_QUERY_TIMEOUT_MS || 15000),
+    statement_timeout: Number(process.env.DB_QUERY_TIMEOUT_MS || 15000),
+    idleTimeoutMillis: 10000,
+    max: 5
 });
 
 pool.on('connect', () => {
     console.log('Connected to PostgreSQL Database');
 });
 
+pool.on('error', (err) => {
+    console.error('Unexpected PostgreSQL pool error', err);
+});
+
+let initializationPromise = null;
+
 const initializeDatabase = async () => {
+    if (initializationPromise) return initializationPromise;
+
+    initializationPromise = (async () => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
@@ -93,11 +105,13 @@ const initializeDatabase = async () => {
     } finally {
         client.release();
     }
+    })();
+
+    return initializationPromise;
 };
 
-initializeDatabase();
-
 module.exports = {
+    initializeDatabase,
     query: (text, params) => pool.query(text, params),
     pool
 };

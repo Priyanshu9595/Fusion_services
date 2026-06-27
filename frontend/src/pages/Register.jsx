@@ -31,11 +31,15 @@ const Register = () => {
       return;
     }
 
+    const controller = new AbortController();
+    const requestTimeoutId = setTimeout(() => controller.abort(), 70000);
+
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: normalizedUsername, password })
+        body: JSON.stringify({ username: normalizedUsername, password }),
+        signal: controller.signal
       });
       
       const data = await response.json();
@@ -45,7 +49,8 @@ const Register = () => {
         const loginResponse = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: normalizedUsername, password })
+          body: JSON.stringify({ username: normalizedUsername, password }),
+          signal: controller.signal
         });
         
         if (loginResponse.ok) {
@@ -60,8 +65,11 @@ const Register = () => {
         setError(data.error || 'Registration failed.');
       }
     } catch (err) {
-      setError('Unable to connect to the server.');
+      setError(err.name === 'AbortError'
+        ? 'Server response timed out. Please try again in a minute.'
+        : 'Unable to connect to the server.');
     } finally {
+      clearTimeout(requestTimeoutId);
       setLoading(false);
     }
   };

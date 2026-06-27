@@ -32,6 +32,9 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-    // Initialize DB connection
-    require('./database');
+    require('./database')
+        .initializeDatabase()
+        .catch((error) => {
+            console.error('Database initialization failed after server start:', error);
+        });
 });
