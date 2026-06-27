@@ -183,11 +183,118 @@ const generatePDF = async (documentData, companySettings) => {
         const filePath = path.join(dir, `${documentData.document_number}.pdf`);
         await page.pdf({ path: filePath, format: 'A4', printBackground: true, margin: { top: '20px', bottom: '20px' } });
         return filePath;
+    } catch (error) {
+        console.error('Puppeteer PDF generation failed, using fallback PDF:', error.message);
+        return generateFallbackPDF(documentData, companySettings);
     } finally {
         if (browser) {
             await browser.close();
         }
     }
 };
+
+const generateFallbackPDF = async (documentData, companySettings) => {
+    const dir = path.join(__dirname, '../../temp');
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+
+    const filePath = path.join(dir, `${documentData.document_number}.pdf`);
+    const isChallan = documentData.type === 'challan';
+    const docTitle = documentData.type === 'invoice' ? 'Tax Invoice' : documentData.type === 'quote' ? 'Quotation' : 'Delivery Challan';
+    const lines = [
+        companySettings.name || 'Fusion Services',
+        docTitle,
+        `Document No: ${documentData.document_number}`,
+        `Date: ${documentData.date || '-'}`,
+        '',
+        `${isChallan ? 'Shipping To' : 'Billed To'}: ${documentData.customer_name || '-'}`,
+        `Address: ${isChallan ? (documentData.shipping_address || documentData.billing_address || '-') : (documentData.billing_address || '-')}`,
+        `Customer GSTIN: ${documentData.customer_gstin || 'N/A'}`,
+        `Phone: ${documentData.phone || '-'}`,
+        '',
+        'Line Items',
+        ...((documentData.items || []).map((item, index) => {
+            const total = isChallan ? '' : ` | Price: Rs. ${item.unit_price} | GST: ${item.gst_percent}% | Total: Rs. ${item.line_total}`;
+            return `${index + 1}. ${item.item_name} | HSN: ${item.hsn || '-'} | Qty: ${item.qty} ${item.unit || ''}${total}`;
+        })),
+        '',
+        ...(isChallan ? [] : [
+            `Subtotal: Rs. ${documentData.subtotal || 0}`,
+            `Total GST: Rs. ${documentData.total_gst || 0}`,
+            `Grand Total: Rs. ${documentData.grand_total || 0}`,
+            '',
+        ]),
+        `Company GSTIN: ${companySettings.gstin || 'N/A'}`,
+        `Bank Details: ${companySettings.bank_details || 'N/A'}`,
+        `Terms: ${companySettings.terms || 'N/A'}`,
+        '',
+        'Generated securely by FusionDocs',
+    ];
+
+    fs.writeFileSync(filePath, createSimplePDF(lines));
+    return filePath;
+};
+
+const createSimplePDF = (lines) => {
+    const pageHeight = 842;
+    const safeLines = lines.flatMap((line) => wrapLine(String(line || ''), 92)).slice(0, 34);
+    const content = [
+        'BT',
+        '/F1 18 Tf',
+        '50 790 Td',
+        `(${escapePdfText(safeLines[0] || 'FusionDocs')}) Tj`,
+        '/F1 10 Tf',
+        ...safeLines.slice(1).map((line) => `0 -20 Td (${escapePdfText(line)}) Tj`),
+        'ET',
+    ].join('\n');
+
+    const objects = [
+        '<< /Type /Catalog /Pages 2 0 R >>',
+        '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 ${pageHeight}] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>`,
+        '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+        `<< /Length ${Buffer.byteLength(content)} >>\nstream\n${content}\nendstream`,
+    ];
+
+    let pdf = '%PDF-1.4\n';
+    const offsets = [0];
+    objects.forEach((object, index) => {
+        offsets.push(Buffer.byteLength(pdf));
+        pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+    });
+
+    const xrefOffset = Buffer.byteLength(pdf);
+    pdf += `xref\n0 ${objects.length + 1}\n`;
+    pdf += '0000000000 65535 f \n';
+    offsets.slice(1).forEach((offset) => {
+        pdf += `${String(offset).padStart(10, '0')} 00000 n \n`;
+    });
+    pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+    return Buffer.from(pdf, 'utf8');
+};
+
+const wrapLine = (line, maxLength) => {
+    if (line.length <= maxLength) return [line];
+    const words = line.split(' ');
+    const rows = [];
+    let current = '';
+    words.forEach((word) => {
+        if ((current + ' ' + word).trim().length > maxLength) {
+            rows.push(current);
+            current = word;
+        } else {
+            current = `${current} ${word}`.trim();
+        }
+    });
+    if (current) rows.push(current);
+    return rows;
+};
+
+const escapePdfText = (value) => value
+    .replace(/[^\x20-\x7E]/g, ' ')
+    .replace(/\\/g, '\\\\')
+    .replace(/\(/g, '\\(')
+    .replace(/\)/g, '\\)');
 
 module.exports = { generatePDF };

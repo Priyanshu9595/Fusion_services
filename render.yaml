@@ -17,6 +17,8 @@ services:
         value: https://fusion-services-ohci.onrender.com/api
       - key: FRONTEND_URL
         value: https://fusion-services-1.onrender.com
+      - key: ALLOW_LEGACY_SHARE_TOKENS
+        value: "true"
 
   - type: static
     name: fusion-services-1

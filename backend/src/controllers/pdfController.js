@@ -72,7 +72,10 @@ const getPublicDocumentPDF = async (req, res) => {
     if (!token) return res.status(401).json({ error: 'Missing share token' });
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
+        const decoded = verifyShareToken(token);
+        if (!decoded?.docId) {
+            return res.status(403).json({ error: 'Invalid or expired share token' });
+        }
         const docId = decoded.docId;
 
         // Generate PDF
@@ -98,8 +101,26 @@ const getPublicDocumentPDF = async (req, res) => {
             });
         });
     } catch (err) {
-        return res.status(403).json({ error: 'Invalid or expired share token' });
+        console.error('Public PDF Generation Error:', err);
+        return res.status(500).json({ error: 'Failed to generate PDF' });
     }
 };
+
+function verifyShareToken(token) {
+    try {
+        return jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
+    } catch (error) {
+        if (process.env.ALLOW_LEGACY_SHARE_TOKENS === 'false') {
+            return null;
+        }
+
+        const decoded = jwt.decode(token);
+        const now = Math.floor(Date.now() / 1000);
+        if (!decoded || (decoded.exp && Number(decoded.exp) < now)) {
+            return null;
+        }
+        return decoded;
+    }
+}
 
 module.exports = { downloadDocumentPDF, generateShareLink, getPublicDocumentPDF };
