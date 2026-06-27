@@ -8,6 +8,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showDelayedMessage, setShowDelayedMessage] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -15,6 +16,12 @@ const Login = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    setShowDelayedMessage(false);
+
+    // Show a message if it takes longer than 3 seconds (Render cold start)
+    const timeoutId = setTimeout(() => {
+      setShowDelayedMessage(true);
+    }, 3000);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/login`, {
@@ -34,7 +41,9 @@ const Login = () => {
     } catch (err) {
       setError('Unable to connect to the server. Is it running?');
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
+      setShowDelayedMessage(false);
     }
   };
 
@@ -104,7 +113,10 @@ const Login = () => {
               className="w-full py-3.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/30 transform transition-all hover:scale-[1.02] active:scale-[0.98] mt-4 flex items-center justify-center"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <div className="flex flex-col items-center">
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  {showDelayedMessage && <span className="text-xs text-blue-200 mt-2 font-normal animate-pulse">Waking up server (takes ~50s on Render)...</span>}
+                </div>
               ) : (
                 'Sign In'
               )}

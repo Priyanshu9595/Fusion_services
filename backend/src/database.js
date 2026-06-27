@@ -2,7 +2,9 @@ const { Pool } = require('pg');
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/fusiondocs',
-    ssl: { rejectUnauthorized: false } 
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 5000,
+    query_timeout: 15000
 });
 
 pool.on('connect', () => {
