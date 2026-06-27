@@ -60,7 +60,7 @@ const generateShareLink = async (req, res) => {
 
         const token = jwt.sign({ docId }, process.env.JWT_SECRET || 'fallback_secret_key', { expiresIn: '7d' });
         const apiBaseUrl = process.env.API_BASE_URL || `${req.protocol}://${req.get('host')}/api`;
-        const link = `${apiBaseUrl}/documents/public/pdf?token=${token}`;
+        const link = `${apiBaseUrl}/documents/public/pdf/${encodeURIComponent(token)}`;
         res.json({ link });
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
@@ -68,7 +68,7 @@ const generateShareLink = async (req, res) => {
 };
 
 const getPublicDocumentPDF = async (req, res) => {
-    const { token } = req.query;
+    const token = req.params.token || req.query.token;
     if (!token) return res.status(401).json({ error: 'Missing share token' });
 
     try {

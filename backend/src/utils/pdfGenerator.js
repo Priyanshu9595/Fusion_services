@@ -161,22 +161,33 @@ const generatePDF = async (documentData, companySettings) => {
     </html>
     `;
 
-    const browser = await puppeteer.launch({ headless: 'new' });
-    const page = await browser.newPage();
-    
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-    
-    const dir = path.join(__dirname, '../../temp');
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir, { recursive: true });
+    const launchOptions = {
+        headless: 'new',
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    };
+    if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+        launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
     }
-    
-    const filePath = path.join(dir, `${documentData.document_number}.pdf`);
-    await page.pdf({ path: filePath, format: 'A4', printBackground: true, margin: { top: '20px', bottom: '20px' } });
-    
-    await browser.close();
-    
-    return filePath;
+
+    let browser;
+    try {
+        browser = await puppeteer.launch(launchOptions);
+        const page = await browser.newPage();
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+        const dir = path.join(__dirname, '../../temp');
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir, { recursive: true });
+        }
+
+        const filePath = path.join(dir, `${documentData.document_number}.pdf`);
+        await page.pdf({ path: filePath, format: 'A4', printBackground: true, margin: { top: '20px', bottom: '20px' } });
+        return filePath;
+    } finally {
+        if (browser) {
+            await browser.close();
+        }
+    }
 };
 
 module.exports = { generatePDF };

@@ -10,7 +10,8 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.post('/parse', authenticateToken, upload.single('file'), documentParser.parseDocument);
 router.post('/', authenticateToken, documentController.createDocument);
 router.get('/', authenticateToken, documentController.getDocuments);
-router.get('/public/pdf', pdfController.getPublicDocumentPDF); // unauthenticated
+router.get('/public/pdf/:token', pdfController.getPublicDocumentPDF); // unauthenticated
+router.get('/public/pdf', pdfController.getPublicDocumentPDF); // unauthenticated legacy query link
 router.get('/:id', authenticateToken, documentController.getDocumentById);
 router.get('/:id/pdf', authenticateToken, pdfController.downloadDocumentPDF);
 router.get('/:id/share', authenticateToken, pdfController.generateShareLink);

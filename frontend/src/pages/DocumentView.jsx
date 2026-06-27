@@ -30,6 +30,9 @@ const DocumentView = () => {
       });
       if (response.ok) {
         const blob = await response.blob();
+        if (!blob.size) {
+          throw new Error('Empty PDF response');
+        }
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -37,9 +40,14 @@ const DocumentView = () => {
         document.body.appendChild(a);
         a.click();
         a.remove();
+        window.URL.revokeObjectURL(url);
+      } else {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to download PDF');
       }
     } catch (err) {
-      alert('Error downloading PDF');
+      console.error(err);
+      alert(err.message || 'Error downloading PDF');
     } finally {
       setDownloading(false);
     }
@@ -59,6 +67,11 @@ const DocumentView = () => {
       }
 
       // Prepare the WhatsApp message with the link
+      if (!data.link) {
+        alert('Share link was not generated');
+        return;
+      }
+
       const text = `Hello ${doc.customer_name},\n\nPlease find the details for your ${doc.type} (${doc.document_number}) from FusionDocs.\n\nGrand Total: ₹${doc.grand_total}\nDate: ${doc.date}\n\nYou can view and download your PDF securely here:\n${data.link}\n\nThank you for your business!`;
       const encodedText = encodeURIComponent(text);
       

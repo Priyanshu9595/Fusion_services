@@ -194,8 +194,8 @@ const Home = () => {
 
                 <div className="container hero-container grid grid-2">
                     <div className="hero-content scroll-reveal slide-in-left">
-                        <span className="badge animated-badge">Enterprise Industrial Solutions</span>
-                        <h1 className="text-reveal-header">Precision Manufacturing Solutions for <span className="text-gradient">Modern Industries</span></h1>
+                        <span className="badge animated-badge">Construction Project Solutions</span>
+                        <h1 className="text-reveal-header">Reliable Construction Solutions for <span className="text-gradient">Modern Projects</span></h1>
                         <p className="tagline-container">We engineer <span id="typing-tagline" className="typing-text"></span><span className="typing-cursor">|</span></p>
                         <div className="hero-actions">
                             <a href="#services" className="btn btn-primary floating-btn btn-magnetic" onclick="navigateToPage('services')">Explore Services</a>
@@ -236,7 +236,7 @@ const Home = () => {
                         
                         <div className="hero-image-card hover-tilt" data-tilt>
                             <div className="glowing-border-overlay"></div>
-                            <img src="/assets/hero_factory.png" alt="Advanced High-Tech Manufacturing Facility" />
+                            <img src="/assets/hero_factory.png" alt="Construction project planning and execution" />
                             <div className="hero-image-overlay"></div>
                             <div className="hero-visual-badge">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="spin-slow"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
@@ -272,7 +272,7 @@ const Home = () => {
                 <div className="container">
                     <div className="strip-header">
                         <h2>Trusted by global enterprise leaders</h2>
-                        <p className="strip-subtitle">Supporting industrial innovation across manufacturing, aerospace, energy, robotics, and engineering sectors.</p>
+                        <p className="strip-subtitle">Supporting construction, infrastructure, commercial projects, residential builds, and site development sectors.</p>
                     </div>
                     <div className="logos-marquee-container">
                         <div className="logos-marquee-track">
@@ -404,9 +404,9 @@ const Home = () => {
                 <div className="container grid grid-2" style={{"maxWidth": "750px", "margin": "0 auto", "alignItems": "center", "gap": "1.5rem"}}>
                     <div className="overview-text scroll-reveal slide-in-left">
                         <span className="section-subtitle" style={{"fontSize": "0.8rem", "marginBottom": "0.5rem"}}>Who We Are</span>
-                        <h2 style={{"fontSize": "1.8rem", "marginBottom": "1rem"}}>Pioneering the Future of Industrial Manufacturing</h2>
-                        <p className="lead" style={{"fontSize": "1rem", "marginBottom": "1rem"}}>At Fusion Services, we unite state-of-the-art machinery with unparalleled engineering expertise to solve the industry's most complex challenges.</p>
-                        <p style={{"fontSize": "0.9rem", "marginBottom": "1rem"}}>From custom prototyping to mass production, our facilities operate under strict ISO standards to guarantee quality, efficiency, and scalability for our enterprise clients.</p>
+                        <h2 style={{"fontSize": "1.8rem", "marginBottom": "1rem"}}>Building the Future of Construction Delivery</h2>
+                        <p className="lead" style={{"fontSize": "1rem", "marginBottom": "1rem"}}>At Fusion Services, we combine site execution, structural planning, material coordination, and project supervision to deliver dependable construction work.</p>
+                        <p style={{"fontSize": "0.9rem", "marginBottom": "1rem"}}>From site planning to final handover, our teams follow structured quality checks to ensure dependable construction, cost control, and timely execution.</p>
                         <a href="#about" className="text-link hover-slide-arrow" onclick="navigateToPage('about')" style={{"fontSize": "0.9rem"}}>Learn more about our journey <span className="arrow">&rarr;</span></a>
                     </div>
                     <div className="overview-visual scroll-reveal slide-in-right">
@@ -466,8 +466,8 @@ const Home = () => {
                 <div className="container">
                     <div className="section-header text-center scroll-reveal">
                         <span className="section-subtitle">Our Specializations</span>
-                        <h2>Key Industrial Service Offerings</h2>
-                        <p>We provide standard and customized solutions designed to meet strict industrial specifications.</p>
+                        <h2>Key Construction Service Offerings</h2>
+                        <p>We provide civil, structural, and project support solutions designed for dependable construction execution.</p>
                     </div>
                     <div className="grid grid-3 service-cards-reveal">
                         
@@ -476,8 +476,8 @@ const Home = () => {
                             <div className="card-icon-container animated-icon">
                                 <svg className="svg-gear" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
                             </div>
-                            <h3>Industrial Manufacturing</h3>
-                            <p>High-volume components production utilizing fully automated casting and machining lines.</p>
+                            <h3>Civil Construction</h3>
+                            <p>Residential, commercial, and industrial civil works with disciplined site execution and quality control.</p>
                             <a href="#services" className="card-link" onclick="navigateToPage('services')">Learn More &rarr;</a>
                         </div>
                         
@@ -486,8 +486,8 @@ const Home = () => {
                             <div className="card-icon-container animated-icon">
                                 <svg className="svg-compass" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                             </div>
-                            <h3>Precision Engineering</h3>
-                            <p>Ultra-precise tool designs with micrometer tolerances for high-reliability applications.</p>
+                            <h3>Structural Engineering</h3>
+                            <p>Structural planning, drawings, load-focused design support, and practical execution coordination.</p>
                             <a href="#services" className="card-link" onclick="navigateToPage('services')">Learn More &rarr;</a>
                         </div>
                         
@@ -496,8 +496,8 @@ const Home = () => {
                             <div className="card-icon-container animated-icon">
                                 <svg className="svg-wrench" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
                             </div>
-                            <h3>Fabrication Services</h3>
-                            <p>Heavy-duty structural metal components assembly, welding, and structural steel works.</p>
+                            <h3>Construction Services</h3>
+                            <p>Concrete work, masonry, finishing, steel support, and complete site-based construction activities.</p>
                             <a href="#services" className="card-link" onclick="navigateToPage('services')">Learn More &rarr;</a>
                         </div>
                         
@@ -507,7 +507,7 @@ const Home = () => {
                                 <svg className="svg-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                             </div>
                             <h3>Quality Inspection</h3>
-                            <p>Non-destructive ultrasonic testing, advanced metrology labs, and certified inspection reports.</p>
+                            <p>Site quality checks, material verification, workmanship review, and construction progress reporting.</p>
                             <a href="#services" className="card-link" onclick="navigateToPage('services')">Learn More &rarr;</a>
                         </div>
                         
@@ -516,8 +516,8 @@ const Home = () => {
                             <div className="card-icon-container animated-icon">
                                 <svg className="svg-briefcase" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l-7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                             </div>
-                            <h3>Industrial Consulting</h3>
-                            <p>Process optimization analysis, materials selection advice, and manufacturing planning.</p>
+                            <h3>Project Consulting</h3>
+                            <p>Planning, material selection, vendor coordination, BOQ support, and construction workflow guidance.</p>
                             <a href="#services" className="card-link" onclick="navigateToPage('services')">Learn More &rarr;</a>
                         </div>
                         
@@ -526,8 +526,8 @@ const Home = () => {
                             <div className="card-icon-container animated-icon">
                                 <svg className="svg-shield" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                             </div>
-                            <h3>Custom Production Solutions</h3>
-                            <p>End-to-end bespoke assembly solutions tailor-made for specialized engineering operations.</p>
+                            <h3>Turnkey Project Solutions</h3>
+                            <p>End-to-end construction support tailored for residential, commercial, and infrastructure projects.</p>
                             <a href="#services" className="card-link" onclick="navigateToPage('services')">Learn More &rarr;</a>
                         </div>
                     </div>
@@ -555,14 +555,14 @@ const Home = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
                             </div>
                             <h4>Modern Infrastructure</h4>
-                            <p>Our state-of-the-art facility features climate-controlled work envelopes and clean production areas for high-tech components.</p>
+                            <p>Our project workflow includes site preparation, material movement, safety checks, and coordinated construction zones.</p>
                         </div>
                         <div className="feature-card scroll-reveal slide-in-right">
                             <div className="feature-icon pulse-effect">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                             </div>
                             <h4>Advanced Technology</h4>
-                            <p>We deploy high-speed multi-axis CNC tooling, advanced CAD/CAM software integrations, and AI-driven workflow monitoring.</p>
+                            <p>We use project planning tools, site measurement workflows, drawings coordination, and progress monitoring.</p>
                         </div>
                         <div className="feature-card scroll-reveal slide-in-left">
                             <div className="feature-icon pulse-effect">
@@ -594,7 +594,7 @@ const Home = () => {
                 <div className="container">
                     <div className="section-header text-center scroll-reveal">
                         <span className="section-subtitle">Operational Excellence</span>
-                        <h2>Our Manufacturing Process</h2>
+                        <h2>Our Construction Process</h2>
                         <p>A rigorous, structured path that takes your project from engineering design to absolute physical reality.</p>
                     </div>
                     
@@ -629,15 +629,15 @@ const Home = () => {
                             <div className="glowing-border-overlay"></div>
                             <div className="process-slide active" id="process-step-1">
                                 <h3>Step 1: Technical Consultation</h3>
-                                <p>We start by reviewing your design diagrams, engineering requirements, and manufacturing goals. Our team evaluates material compatibility, cost-efficiency, and tolerances to propose the optimal production approach.</p>
+                                <p>We start by reviewing drawings, site requirements, budget, timeline, and construction goals. Our team evaluates materials, permissions, quantities, and execution feasibility.</p>
                             </div>
                             <div className="process-slide" id="process-step-2">
                                 <h3>Step 2: Engineering & Planning</h3>
-                                <p>Using advanced CAD/CAM modeling, our engineering specialists create the precise toolpaths and production schedules. We acquire certified raw materials, finalize workholding fixtures, and conduct virtual simulation trials.</p>
+                                <p>Our team prepares work schedules, BOQ references, procurement plans, and site coordination steps before execution begins.</p>
                             </div>
                             <div className="process-slide" id="process-step-3">
                                 <h3>Step 3: Advanced Production</h3>
-                                <p>Your components enter our climate-controlled manufacturing floors. Utilizing state-of-the-art multi-axis milling, turning, or heavy fabrication cells, materials are processed to exact CAD specifications under real-time telemetry.</p>
+                                <p>Your project moves into site execution with supervised civil work, structural activity, material checks, and daily progress tracking.</p>
                             </div>
                             <div className="process-slide" id="process-step-4">
                                 <h3>Step 4: Rigorous Quality Testing</h3>
@@ -658,7 +658,7 @@ const Home = () => {
                     <div className="section-header text-center scroll-reveal">
                         <span className="section-subtitle">Client Success</span>
                         <h2>What Industry Leaders Say</h2>
-                        <p>Hear from global automotive, aerospace, and energy executives about their partnerships with Fusion Services.</p>
+                        <p>Hear from clients and project partners about their construction experience with Fusion Services.</p>
                     </div>
                     
                     
@@ -669,7 +669,7 @@ const Home = () => {
                             <div className="testimonial-slide active">
                                 <div className="testimonial-card card floating-review">
                                     <div className="quote-icon">“</div>
-                                    <p className="quote-text">Fusion Services has transformed our supply chain reliability. Their precision machined components consistently exceed our aerospace grade tolerances, and their engineering support team is stellar.</p>
+                                    <p className="quote-text">Fusion Services handled our project planning and site execution with discipline. Their team kept quality, timeline, and material coordination under control.</p>
                                     <div className="client-info">
                                         <div className="client-meta">
                                             <h4 className="client-name">Marcus Vance</h4>
@@ -683,7 +683,7 @@ const Home = () => {
                             <div className="testimonial-slide">
                                 <div className="testimonial-card card floating-review">
                                     <div className="quote-icon">“</div>
-                                    <p className="quote-text">Their heavy fabrication capacity solved a massive bottleneck in our offshore energy structures. They delivered 45 heavy-duty frames ahead of schedule, each passing NDT testing on the first try.</p>
+                                    <p className="quote-text">Their construction support solved our site bottlenecks quickly. Work moved faster once their team took over coordination and daily execution tracking.</p>
                                     <div className="client-info">
                                         <div className="client-meta">
                                             <h4 className="client-name">Elena Rostova</h4>
@@ -697,11 +697,11 @@ const Home = () => {
                             <div className="testimonial-slide">
                                 <div className="testimonial-card card floating-review">
                                     <div className="quote-icon">“</div>
-                                    <p className="quote-text">The custom automated production line designed and manufactured by Fusion has doubled our output. Their consultative engineering phase saved us hundreds of thousands in setup costs.</p>
+                                    <p className="quote-text">Fusion's project consulting helped us reduce rework and control costs. Their practical construction planning made the execution much smoother.</p>
                                     <div className="client-info">
                                         <div className="client-meta">
                                             <h4 className="client-name">David K. Miller</h4>
-                                            <span className="client-title">Director of Manufacturing, AutoDrive Labs</span>
+                                            <span className="client-title">Project Director, Urban Build Group</span>
                                         </div>
                                     </div>
                                 </div>
@@ -723,7 +723,7 @@ const Home = () => {
             <section className="cta-section section-padding bg-dark text-center parallax-section" style={{"backgroundImage":"linear-gradient(180deg, rgba(11, 19, 43, 0.9) 0%, rgba(11, 19, 43, 0.95) 100%), url('assets/hero_factory.png')"}}>
                 <div className="container scroll-reveal zoom-in">
                     <h2>Let's Build Something Together</h2>
-                    <p>Contact our technical consulting team today to discuss your manufacturing blueprints, procurement guidelines, and schedule a facility tour.</p>
+                    <p>Contact our project team today to discuss construction drawings, BOQ, material planning, site execution, or turnkey requirements.</p>
                     <a href="#contact" className="btn btn-primary pulse-badge" onclick="navigateToPage('contact')">Get In Touch Today &rarr;</a>
                 </div>
             </section>
@@ -736,7 +736,7 @@ const Home = () => {
                 <div className="container text-center">
                     <span className="badge animated-badge">Who We Are</span>
                     <h1>Our Engineering Heritage</h1>
-                    <p>Learn about our mission, vision, and the values that drive our manufacturing excellence.</p>
+                    <p>Learn about our mission, vision, and the values that drive our construction delivery.</p>
                 </div>
             </section>
 
@@ -745,8 +745,8 @@ const Home = () => {
                 <div className="container grid grid-2">
                     <div className="overview-details scroll-reveal slide-in-left">
                         <h2>Dedicated to Precision & Quality</h2>
-                        <p className="lead">Founded on the principles of mechanical integrity and workflow innovation, Fusion Services is a leader in advanced manufacturing.</p>
-                        <p>We provide full-spectrum engineering support and production capabilities that allow modern global businesses to grow. We focus heavily on engineering excellence, sustainable resource allocation, and continuous workforce development to lead the next generation of industrial solutions.</p>
+                        <p className="lead">Founded on practical site execution, structural discipline, and project accountability, Fusion Services supports reliable construction delivery.</p>
+                        <p>We provide civil construction, structural support, project consulting, BOQ coordination, and turnkey execution assistance. We focus on quality workmanship, material discipline, safety, and clear communication across every project stage.</p>
                         <div className="mvv-grid">
                             <div className="mvv-item card hover-tilt" data-tilt>
                                 <div className="glowing-border-overlay"></div>
@@ -756,7 +756,7 @@ const Home = () => {
                             <div className="mvv-item card hover-tilt" data-tilt>
                                 <div className="glowing-border-overlay"></div>
                                 <h5>Our Vision</h5>
-                                <p>To be the premier global partner in modern automated manufacturing, recognized for pioneering technologies, rigid quality, and client trust.</p>
+                                <p>To be a trusted construction partner recognized for reliable execution, quality workmanship, transparent coordination, and client trust.</p>
                             </div>
                         </div>
                     </div>
@@ -765,13 +765,13 @@ const Home = () => {
                         <h3>Core Values</h3>
                         <ul className="values-list">
                             <li>
-                                <strong>Safety First:</strong> Protecting our workforce and enforcing zero-incident environments on all factory floors.
+                                <strong>Safety First:</strong> Protecting workers, clients, and site teams through disciplined safety practices on every project.
                             </li>
                             <li>
                                 <strong>Integrity & Precision:</strong> Maintaining structural tolerances in our metal and metal-free workpieces alike.
                             </li>
                             <li>
-                                <strong>Innovation:</strong> Continuously investing in AI, multi-axis machining tools, and automated testing labs.
+                                <strong>Innovation:</strong> Continuously improving planning, site coordination, measurement, and reporting workflows.
                             </li>
                             <li>
                                 <strong>Collaboration:</strong> Aligning closely with client project managers, sharing detailed metrology and scheduling data.
@@ -786,14 +786,14 @@ const Home = () => {
                 <div className="container">
                     <div className="section-header text-center scroll-reveal">
                         <span className="section-subtitle">What We Do Best</span>
-                        <h2>Manufacturing Capabilities</h2>
-                        <p>Our heavy industrial plant is designed to handle demanding production throughput under high-specification controls.</p>
+                        <h2>Construction Capabilities</h2>
+                        <p>Our construction workflow is designed to handle civil works, structural coordination, finishing, repair, and turnkey execution.</p>
                     </div>
                     <div className="grid grid-4 capability-cards-reveal">
                         <div className="capability-card card hover-tilt scroll-reveal reveal-item" data-tilt>
                             <div className="glowing-border-overlay"></div>
                             <h4>Modern Machinery</h4>
-                            <p>Multi-axis high-speed CNC milling and turning centers, heavy laser sheet cutters, and automated robotic welders.</p>
+                            <p>Site preparation, RCC work, masonry, plastering, waterproofing, steel support, finishing, and project supervision.</p>
                         </div>
                         <div className="capability-card card hover-tilt scroll-reveal reveal-item" data-tilt style={{"animationDelay":"0.1s"}}>
                             <div className="glowing-border-overlay"></div>
@@ -820,7 +820,7 @@ const Home = () => {
                     <div className="section-header text-center scroll-reveal">
                         <span className="section-subtitle">Our Journey</span>
                         <h2>Growth & Milestones</h2>
-                        <p>How Fusion Services developed into an industry-leading manufacturing powerhouse.</p>
+                        <p>How Fusion Services developed into a dependable construction and project execution partner.</p>
                     </div>
 
                     <div className="timeline-container">
@@ -834,7 +834,7 @@ const Home = () => {
                                 <div className="glowing-border-overlay"></div>
                                 <span className="timeline-date">2016</span>
                                 <h4>Company Founding</h4>
-                                <p>Fusion Services launched in an industrial incubator with two precision CNC machining hubs and a staff of five engineers.</p>
+                                <p>Fusion Services launched with a small execution team focused on civil work, site coordination, and client trust.</p>
                             </div>
                         </div>
 
@@ -844,7 +844,7 @@ const Home = () => {
                                 <div className="glowing-border-overlay"></div>
                                 <span className="timeline-date">2018</span>
                                 <h4>Facility Expansion</h4>
-                                <p>Moved into a custom 25,000 sq ft manufacturing facility. Expanded capabilities to include heavy fabrication and structural welding.</p>
+                                <p>Expanded into larger construction projects, adding structural support, finishing teams, repair work, and stronger site supervision.</p>
                             </div>
                         </div>
 
@@ -854,7 +854,7 @@ const Home = () => {
                                 <div className="glowing-border-overlay"></div>
                                 <span className="timeline-date">2020</span>
                                 <h4>ISO Certification & Aerospace</h4>
-                                <p>Secured ISO 9001 and AS9100 quality certifications, opening major defense, aerospace, and satellite manufacturing pipelines.</p>
+                                <p>Strengthened documentation, quality checks, vendor coordination, and project reporting for larger construction clients.</p>
                             </div>
                         </div>
 
@@ -874,7 +874,7 @@ const Home = () => {
                                 <div className="glowing-border-overlay"></div>
                                 <span className="timeline-date">2026</span>
                                 <h4>Global Supply Expansion</h4>
-                                <p>Operating 75,000 sq ft of smart manufacturing space, serving clients globally across automotive, energy, and aerospace sectors.</p>
+                                <p>Serving residential, commercial, and infrastructure clients with civil works, repairs, renovation, and project coordination.</p>
                             </div>
                         </div>
                     </div>
@@ -904,7 +904,7 @@ const Home = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                             </div>
                             <h4>Guaranteed Lead Times</h4>
-                            <p>Contractual backing on deliverable dates with robust logistics pathways to handle emergency manufacturing requirements.</p>
+                            <p>Committed project schedules, site follow-ups, and material coordination to handle urgent construction requirements.</p>
                         </div>
                         <div className="card hover-tilt scroll-reveal zoom-in" data-tilt style={{"animationDelay":"0.2s"}}>
                             <div className="glowing-border-overlay"></div>
@@ -925,8 +925,8 @@ const Home = () => {
             <section className="page-hero bg-dark">
                 <div className="container text-center">
                     <span className="badge animated-badge">What We Deliver</span>
-                    <h1>Industrial Services & Solutions</h1>
-                    <p>Explore our complete spectrum of engineering capabilities and custom manufacturing solutions.</p>
+                    <h1>Construction Services & Solutions</h1>
+                    <p>Explore our civil works, structural support, project coordination, and turnkey construction capabilities.</p>
                 </div>
             </section>
 
@@ -935,20 +935,20 @@ const Home = () => {
                 <div className="container">
                     <div className="grid grid-2 service-block">
                         <div className="service-image-wrapper hover-zoom-img scroll-reveal slide-in-left">
-                            <img src="/assets/heavy_machinery.png" alt="Industrial Manufacturing floor" />
+                            <img src="/assets/heavy_machinery.png" alt="Construction equipment and project site" />
                         </div>
                         <div className="service-info-wrapper scroll-reveal slide-in-right">
                             <span className="service-number">01</span>
-                            <h3>Industrial Manufacturing</h3>
-                            <p>We provide full-scale automated casting, machining, and parts manufacturing. Our facilities are configured to handle high-volume productions with optimal cycle times and zero defect targets.</p>
+                            <h3>Civil Construction</h3>
+                            <p>We deliver civil construction work for residential, commercial, and industrial projects with structured planning, skilled teams, and reliable site supervision.</p>
                             <div className="features-benefits">
                                 <div className="fb-item">
                                     <strong>Key Features:</strong>
-                                    <p>Automated manufacturing lines, casting, tool changing, and real-time process control.</p>
+                                    <p>Site preparation, RCC work, masonry, plastering, finishing, and daily progress control.</p>
                                 </div>
                                 <div className="fb-item">
                                     <strong>Benefits:</strong>
-                                    <p>Reduced per-unit cost, perfect consistency, and accelerated scaling for bulk contracts.</p>
+                                    <p>Better schedule control, cleaner execution, and dependable quality across project stages.</p>
                                 </div>
                             </div>
                         </div>
@@ -956,20 +956,20 @@ const Home = () => {
 
                     <div className="grid grid-2 service-block reverse">
                         <div className="service-image-wrapper hover-zoom-img scroll-reveal slide-in-right">
-                            <img src="/assets/precision_part.png" alt="Precision machined steel component" />
+                            <img src="/assets/precision_part.png" alt="Structural construction planning detail" />
                         </div>
                         <div className="service-info-wrapper scroll-reveal slide-in-left">
                             <span className="service-number">02</span>
-                            <h3>Precision Components</h3>
-                            <p>Engineered for mission-critical assemblies. We specialize in components requiring extremely close tolerances, utilizing 5-axis CNC machining centers, EDM slicing, and micro-precision tooling.</p>
+                            <h3>Structural Project Support</h3>
+                            <p>We support construction projects with structural planning, BOQ coordination, reinforcement detailing, and execution-ready technical guidance.</p>
                             <div className="features-benefits">
                                 <div className="fb-item">
                                     <strong>Key Features:</strong>
-                                    <p>5-axis CNC capability, electrical discharge machining, sub-micron coordinate testing.</p>
+                                    <p>Structural drawings review, reinforcement coordination, quantity planning, and site checks.</p>
                                 </div>
                                 <div className="fb-item">
                                     <strong>Benefits:</strong>
-                                    <p>Flawless component performance in high-stress, vacuum, or high-temperature environments.</p>
+                                    <p>Improved site accuracy, reduced rework, and stronger coordination between planning and execution.</p>
                                 </div>
                             </div>
                         </div>
@@ -979,61 +979,61 @@ const Home = () => {
                         <div className="service-card-detailed card hover-tilt scroll-reveal zoom-in" data-tilt>
                             <div className="glowing-border-overlay"></div>
                             <span className="num-tag">03</span>
-                            <h4>Fabrication Solutions</h4>
-                            <p>Structural welding, heavy metal rolling, bending, and structural assembly. Certified for thick structural plates and pressure vessels.</p>
+                            <h4>Construction Solutions</h4>
+                            <p>Concrete, masonry, steel support, waterproofing, finishing, repair, and site development work for construction projects.</p>
                             <div className="features-benefits-inline">
-                                <strong>Features:</strong> AWS certified welders, heavy-duty overhead crane assembly bays.<br />
-                                <strong>Benefits:</strong> Durable heavy equipment structures optimized for structural load.
+                                <strong>Features:</strong> Skilled site teams, material coordination, safety practices, and supervision.<br />
+                                <strong>Benefits:</strong> Strong execution quality and predictable project progress.
                             </div>
                         </div>
                         <div className="service-card-detailed card hover-tilt scroll-reveal zoom-in" data-tilt style={{"animationDelay":"0.1s"}}>
                             <div className="glowing-border-overlay"></div>
                             <span className="num-tag">04</span>
-                            <h4>Quality Testing Services</h4>
-                            <p>Comprehensive inspection laboratory performing non-destructive testing (NDT), ultrasound audits, metrology verification, and metallurgic testing.</p>
+                            <h4>Site Quality Services</h4>
+                            <p>Construction-stage quality checks, material verification, measurement review, and workmanship inspections.</p>
                             <div className="features-benefits-inline">
-                                <strong>Features:</strong> Coordinate measuring machines, dye penetrant, X-ray scanning labs.<br />
-                                <strong>Benefits:</strong> Certified compliance documentation, risk mitigation, and zero failure rates.
+                                <strong>Features:</strong> Checklists, measurement sheets, site photos, and progress documentation.<br />
+                                <strong>Benefits:</strong> Reduced rework, transparent reporting, and stronger client confidence.
                             </div>
                         </div>
                         <div className="service-card-detailed card hover-tilt scroll-reveal zoom-in" data-tilt style={{"animationDelay":"0.2s"}}>
                             <div className="glowing-border-overlay"></div>
                             <span className="num-tag">05</span>
-                            <h4>Engineering Support</h4>
-                            <p>Our mechanical engineering team offers design-for-manufacturability (DFM) support, material conversion plans, and CAD model optimizations.</p>
+                            <h4>Construction Support</h4>
+                            <p>Our team supports drawing coordination, BOQ preparation, vendor alignment, and practical site execution planning.</p>
                             <div className="features-benefits-inline">
-                                <strong>Features:</strong> Advanced finite element analysis (FEA), mechanical load simulation.<br />
-                                <strong>Benefits:</strong> Lower production costs and higher material durability.
+                                <strong>Features:</strong> BOQ support, schedule planning, site coordination, and material advice.<br />
+                                <strong>Benefits:</strong> Lower project delays and better cost control.
                             </div>
                         </div>
                         <div className="service-card-detailed card hover-tilt scroll-reveal zoom-in" data-tilt>
                             <div className="glowing-border-overlay"></div>
                             <span className="num-tag">06</span>
-                            <h4>Industrial Maintenance</h4>
-                            <p>Precision mechanical tooling reconditioning, regular CNC maintenance, mold repairs, and structural component rebuilding.</p>
+                            <h4>Repair & Maintenance</h4>
+                            <p>Building repair, renovation, waterproofing, structural strengthening, and maintenance support for existing sites.</p>
                             <div className="features-benefits-inline">
-                                <strong>Features:</strong> Tool regrinding, hard chroming, emergency mechanical repair cells.<br />
-                                <strong>Benefits:</strong> Maximized lifespan of expensive custom tooling and minimal production downtime.
+                                <strong>Features:</strong> Site inspection, repair planning, waterproofing, and restoration works.<br />
+                                <strong>Benefits:</strong> Longer building life and reduced future maintenance costs.
                             </div>
                         </div>
                         <div className="service-card-detailed card hover-tilt scroll-reveal zoom-in" data-tilt style={{"animationDelay":"0.1s"}}>
                             <div className="glowing-border-overlay"></div>
                             <span className="num-tag">07</span>
-                            <h4>Production Consulting</h4>
-                            <p>Workplace workflow auditing, material sourcing optimizations, value stream mapping, and factory logistics layout planning.</p>
+                            <h4>Project Consulting</h4>
+                            <p>Construction planning, contractor coordination, material sourcing, timeline review, and execution strategy.</p>
                             <div className="features-benefits-inline">
-                                <strong>Features:</strong> Six Sigma Black Belt certified consultants, lean flow simulations.<br />
-                                <strong>Benefits:</strong> Elimination of manufacturing waste, streamlined procurement, and higher margins.
+                                <strong>Features:</strong> BOQ review, vendor comparison, procurement planning, and site progress tracking.<br />
+                                <strong>Benefits:</strong> Fewer delays, clearer budgets, and smoother project delivery.
                             </div>
                         </div>
                         <div className="service-card-detailed card hover-tilt scroll-reveal zoom-in" data-tilt style={{"animationDelay":"0.2s"}}>
                             <div className="glowing-border-overlay"></div>
                             <span className="num-tag">08</span>
-                            <h4>Custom Manufacturing</h4>
-                            <p>End-to-end custom production builds, special purpose industrial machines, prototypes, and low-run technical components.</p>
+                            <h4>Turnkey Construction</h4>
+                            <p>End-to-end construction delivery from planning and materials to execution, finishing, and handover support.</p>
                             <div className="features-benefits-inline">
-                                <strong>Features:</strong> Dedicated prototyping labs, rapid tooling setups, agile assembly lines.<br />
-                                <strong>Benefits:</strong> Rapid time-to-market testing and flexible designs before committing to volume runs.
+                                <strong>Features:</strong> Single-point coordination, execution teams, quality checks, and handover support.<br />
+                                <strong>Benefits:</strong> A simpler client experience and stronger accountability from start to finish.
                             </div>
                         </div>
                     </div>
@@ -1045,29 +1045,29 @@ const Home = () => {
                 <div className="container">
                     <div className="section-header text-center scroll-reveal">
                         <span className="section-subtitle">Visual Tour</span>
-                        <h2>Manufacturing Process Gallery</h2>
-                        <p>Take a look inside our state-of-the-art facility floors, assembly lines, and inspection centers.</p>
+                        <h2>Construction Project Gallery</h2>
+                        <p>Take a look at our project execution, site coordination, structural work, and finishing capabilities.</p>
                     </div>
                     <div className="grid grid-3 gallery-grid">
                         <div className="gallery-item card hover-tilt scroll-reveal zoom-in" data-tilt>
-                            <img src="/assets/hero_factory.png" alt="Smart assembly automation line" />
+                            <img src="/assets/hero_factory.png" alt="Construction project coordination" />
                             <div className="gallery-overlay">
-                                <h5>Smart Assembly Cell</h5>
-                                <p>Automated manufacturing systems in action</p>
+                                <h5>Project Coordination</h5>
+                                <p>Planning, material movement, and site execution in action</p>
                             </div>
                         </div>
                         <div className="gallery-item card hover-tilt scroll-reveal zoom-in" data-tilt style={{"animationDelay":"0.1s"}}>
-                            <img src="/assets/precision_part.png" alt="Precision CNC parts audit" />
+                            <img src="/assets/precision_part.png" alt="Construction quality inspection" />
                             <div className="gallery-overlay">
-                                <h5>CMM Inspection Lab</h5>
-                                <p>Verifying micron-scale accuracy of metal parts</p>
+                                <h5>Quality Inspection</h5>
+                                <p>Checking measurements, finishing, and site workmanship</p>
                             </div>
                         </div>
                         <div className="gallery-item card hover-tilt scroll-reveal zoom-in" data-tilt style={{"animationDelay":"0.2s"}}>
-                            <img src="/assets/heavy_machinery.png" alt="Metal fabrication cutting cell" />
+                            <img src="/assets/heavy_machinery.png" alt="Construction equipment and site work" />
                             <div className="gallery-overlay">
-                                <h5>High-Speed Metal Fabricator</h5>
-                                <p>Processing aerospace grade alloys</p>
+                                <h5>Site Equipment Support</h5>
+                                <p>Coordinated equipment use for faster construction progress</p>
                             </div>
                         </div>
                     </div>
@@ -1082,7 +1082,7 @@ const Home = () => {
                 <div className="container text-center">
                     <span className="badge animated-badge">Proven Results</span>
                     <h1>Enterprise Portfolio & Success</h1>
-                    <p>Explore case studies detailing how we solved challenging engineering tasks for global clients.</p>
+                    <p>Explore case studies detailing how we solved construction, site coordination, and project delivery challenges.</p>
                 </div>
             </section>
 
@@ -1093,24 +1093,24 @@ const Home = () => {
                     
                     <div className="project-block card grid grid-2 scroll-reveal zoom-in">
                         <div className="project-image hover-zoom-img">
-                            <img src="/assets/automotive_assembly.png" alt="Automotive robotic welding assembly line" />
+                            <img src="/assets/automotive_assembly.png" alt="Commercial construction execution" />
                         </div>
                         <div className="project-details">
-                            <span className="badge badge-accent animated-badge">Case Study: Automotive</span>
-                            <h3>Automotive Components Manufacturing</h3>
-                            <p><strong>Description:</strong> High-volume production of steering knuckles and chassis suspension brackets for a leading electric vehicle manufacturer.</p>
+                            <span className="badge badge-accent animated-badge">Case Study: Commercial</span>
+                            <h3>Commercial Building Execution</h3>
+                            <p><strong>Description:</strong> Coordinated civil work, material planning, and finishing support for a multi-floor commercial project.</p>
                             <div className="challenge-solution">
                                 <div className="cs-block">
                                     <strong>Challenge:</strong>
-                                    <p>Reducing components weight while strengthening fatigue limits, meeting a tight 30-day tooling ramp schedule.</p>
+                                    <p>Maintaining schedule discipline while coordinating multiple vendors, materials, and quality checkpoints.</p>
                                 </div>
                                 <div className="cs-block">
                                     <strong>Solution:</strong>
-                                    <p>We engineered a structural cast aluminum formulation with specialized thermal treatments, and programmed automated dual-robotic milling cells.</p>
+                                    <p>We created a phased work plan, aligned material delivery, and maintained daily site reporting for faster decisions.</p>
                                 </div>
                                 <div className="cs-block">
                                     <strong>Outcome:</strong>
-                                    <p>15% weight reduction, zero field fatigue failures reported across 120,000 units, and on-time assembly deliveries.</p>
+                                    <p>Reduced delays, improved vendor coordination, and completed priority work packages on schedule.</p>
                                 </div>
                             </div>
                         </div>
@@ -1119,24 +1119,24 @@ const Home = () => {
                     
                     <div className="project-block card grid grid-2 reverse scroll-reveal zoom-in">
                         <div className="project-image hover-zoom-img">
-                            <img src="/assets/heavy_machinery.png" alt="Laser cutter fabrication process" />
+                            <img src="/assets/heavy_machinery.png" alt="Infrastructure construction site" />
                         </div>
                         <div className="project-details">
-                            <span className="badge badge-accent animated-badge">Case Study: Energy</span>
-                            <h3>Industrial Equipment Production</h3>
-                            <p><strong>Description:</strong> Precision fabrication of heavy-duty gas turbine pressure housings and steam manifolds for a global power company.</p>
+                            <span className="badge badge-accent animated-badge">Case Study: Infrastructure</span>
+                            <h3>Site Development Work</h3>
+                            <p><strong>Description:</strong> Earthwork, base preparation, structural support, and site coordination for an infrastructure project.</p>
                             <div className="challenge-solution">
                                 <div className="cs-block">
                                     <strong>Challenge:</strong>
-                                    <p>Housings had to withstand 450&deg;C temperatures and pressure fluctuations, requiring complex welding operations on heavy alloys.</p>
+                                    <p>Site conditions required careful sequencing, material handling, and continuous supervision to avoid delays.</p>
                                 </div>
                                 <div className="cs-block">
                                     <strong>Solution:</strong>
-                                    <p>Utilized automated gas tungsten arc welding (GTAW) paired with pre-heat thermal controls, and custom internal support fixtures.</p>
+                                    <p>Used a staged execution plan with quality checkpoints, vendor scheduling, and daily progress review.</p>
                                 </div>
                                 <div className="cs-block">
                                     <strong>Outcome:</strong>
-                                    <p>Passed 100% of internal and external non-destructive X-ray audits. Delivered a 20-year structural service warranty.</p>
+                                    <p>Completed critical site packages with improved coordination and reduced rework.</p>
                                 </div>
                             </div>
                         </div>
@@ -1145,24 +1145,24 @@ const Home = () => {
                     
                     <div className="project-block card grid grid-2 scroll-reveal zoom-in">
                         <div className="project-image hover-zoom-img">
-                            <img src="/assets/precision_part.png" alt="Precision CNC milled component" />
+                            <img src="/assets/precision_part.png" alt="Structural planning and site detailing" />
                         </div>
                         <div className="project-details">
-                            <span className="badge badge-accent animated-badge">Case Study: Aerospace</span>
-                            <h3>Precision Engineering Solutions</h3>
-                            <p><strong>Description:</strong> Machining of lightweight titanium alloy actuator joints and internal gimbal fittings for commercial satellite platforms.</p>
+                            <span className="badge badge-accent animated-badge">Case Study: Residential</span>
+                            <h3>Residential Structural Support</h3>
+                            <p><strong>Description:</strong> Structural coordination, BOQ support, and execution guidance for a residential construction project.</p>
                             <div className="challenge-solution">
                                 <div className="cs-block">
                                     <strong>Challenge:</strong>
-                                    <p>Ultra-thin walls (0.5mm) prone to deflection and vibration warping during high-speed spindle operations.</p>
+                                    <p>Balancing client design expectations, structural requirements, and controlled project cost.</p>
                                 </div>
                                 <div className="cs-block">
                                     <strong>Solution:</strong>
-                                    <p>We designed custom cryo-fluid cooled workholding chucks, using micro-precision toolpaths with specialized solid carbide cutters.</p>
+                                    <p>We reviewed drawings, aligned quantities, coordinated materials, and supported practical site decisions.</p>
                                 </div>
                                 <div className="cs-block">
                                     <strong>Outcome:</strong>
-                                    <p>Deflection kept under 3 microns. High yield rate of 99.8% saved the client over $85,000 in titanium raw material scrap.</p>
+                                    <p>Improved site clarity, reduced material confusion, and helped keep execution within planned budget.</p>
                                 </div>
                             </div>
                         </div>
@@ -1171,20 +1171,20 @@ const Home = () => {
                     
                     <div className="project-block card grid grid-2 reverse scroll-reveal zoom-in">
                         <div className="project-image hover-zoom-img">
-                            <img src="/assets/hero_factory.png" alt="Industrial robotic fabrication cell" />
+                            <img src="/assets/hero_factory.png" alt="Turnkey construction project" />
                         </div>
                         <div className="project-details">
                             <span className="badge badge-accent animated-badge">Case Study: Infrastructure</span>
-                            <h3>Custom Fabrication Project</h3>
-                            <p><strong>Description:</strong> Large-scale fabrication of structural steel building modular joints and support columns for a massive cleanroom center.</p>
+                            <h3>Turnkey Construction Project</h3>
+                            <p><strong>Description:</strong> End-to-end construction coordination for structural work, finishing, vendor management, and handover support.</p>
                             <div className="challenge-solution">
                                 <div className="cs-block">
                                     <strong>Challenge:</strong>
-                                    <p>Joints required structural stability to handle load and minimize cleanroom floor vibrations down to sub-vibration levels.</p>
+                                    <p>The client needed one accountable team to manage timeline, materials, quality, and finishing details.</p>
                                 </div>
                                 <div className="cs-block">
                                     <strong>Solution:</strong>
-                                    <p>We applied thick structural plate fabrication using state-of-the-art CNC plasma tables, heavy press-brakes, and double-pass submerged arc welding.</p>
+                                    <p>We managed phased construction, site teams, procurement coordination, and quality checks through handover.</p>
                                 </div>
                                 <div className="cs-block">
                                     <strong>Outcome:</strong>
@@ -1202,7 +1202,7 @@ const Home = () => {
                 <div className="container">
                     <span className="badge animated-badge">Business Impact</span>
                     <h2>Key Operational Achievements</h2>
-                    <p className="lead">How our manufacturing solutions translate into business value for our enterprise partners.</p>
+                    <p className="lead">How our construction solutions translate into better project delivery for our clients.</p>
                     
                     <div className="grid grid-3 metrics-grid">
                         <div className="metric-card scroll-reveal zoom-in">
@@ -1229,7 +1229,7 @@ const Home = () => {
                 <div className="container text-center">
                     <span className="badge animated-badge">Get In Touch</span>
                     <h1>Contact Fusion Services</h1>
-                    <p>Discuss your manufacturing designs, schedule facility visits, or request volume proposals.</p>
+                    <p>Discuss your construction drawings, BOQ, site visit, repair work, or turnkey project requirement.</p>
                 </div>
             </section>
 
@@ -1271,9 +1271,9 @@ const Home = () => {
                                 <label className="select-label" htmlFor="requirement_type">Requirement Type *</label>
                                 <select id="requirement_type" name="requirement_type" required>
                                     <option value="" disabled selected>Select an option...</option>
-                                    <option value="precision_machining">Precision CNC Machining</option>
-                                    <option value="heavy_fabrication">Heavy Fabrication</option>
-                                    <option value="volume_manufacturing">Volume Parts Production</option>
+                                    <option value="civil_construction">Civil Construction</option>
+                                    <option value="structural_work">Structural Work</option>
+                                    <option value="turnkey_project">Turnkey Project</option>
                                     <option value="engineering_consulting">Technical Consulting</option>
                                     <option value="other">Other Inquiry</option>
                                 </select>
@@ -1390,7 +1390,7 @@ const Home = () => {
                 <a href="#home" className="footer-logo" onclick="navigateToPage('home')">
                     <span className="logo-accent">FUSION</span>SERVICES
                 </a>
-                <p className="footer-desc">High-precision manufacturing, metal fabrication, and professional engineering consultancies for aerospace, automotive, energy, and defense fields.</p>
+                <p className="footer-desc">Civil construction, structural support, repair, renovation, waterproofing, finishing, and professional project consulting services.</p>
                 <div className="social-icons">
                     <a href="#" aria-label="LinkedIn" className="social-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
@@ -1418,8 +1418,8 @@ const Home = () => {
             <div className="footer-links-column">
                 <h4>Capabilities</h4>
                 <ul>
-                    <li><a href="#services" onclick="navigateToPage('services')">5-Axis CNC Machining</a></li>
-                    <li><a href="#services" onclick="navigateToPage('services')">Heavy Metal Fabrication</a></li>
+                    <li><a href="#services" onclick="navigateToPage('services')">Civil Construction</a></li>
+                    <li><a href="#services" onclick="navigateToPage('services')">Structural Work</a></li>
                     <li><a href="#services" onclick="navigateToPage('services')">CMM Quality Audits</a></li>
                     <li><a href="#services" onclick="navigateToPage('services')">Design For Assembly (DFM)</a></li>
                     <li><a href="#services" onclick="navigateToPage('services')">Custom Automation Tools</a></li>
@@ -1437,7 +1437,7 @@ const Home = () => {
         
         <div className="footer-bottom">
             <div className="container footer-bottom-container">
-                <p>&copy; 2026 Fusion Services. All rights reserved. Precision Manufacturing solutions.</p>
+                <p>&copy; 2026 Fusion Services. All rights reserved. Construction and project solutions.</p>
                 <div className="footer-legal-links">
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms & Conditions</a>
