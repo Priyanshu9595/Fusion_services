@@ -1828,12 +1828,12 @@ img {
 .project-block {
     padding: 0;
     overflow: hidden;
-    margin-bottom: 5rem;
+    margin-bottom: 3.5rem;
     transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
 }
 
 .project-block:hover {
-    transform: translateY(-8px);
+    transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
 }
 
@@ -1844,22 +1844,26 @@ img {
 .project-image img {
     width: 100%;
     height: 100%;
+    max-height: 100%;
     object-fit: cover;
     border-radius: 0;
 }
 
 .project-details {
-    padding: 3rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .challenge-solution {
-    margin-top: 2rem;
+    margin-top: 1.25rem;
     border-top: 1px solid var(--color-border);
-    padding-top: 1.5rem;
+    padding-top: 1rem;
 }
 
 .cs-block {
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.75rem;
 }
 
 .cs-block:last-child {
@@ -1869,13 +1873,13 @@ img {
 .cs-block strong {
     font-family: var(--font-heading);
     color: var(--color-primary);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem;
 }
 
 .cs-block p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin-bottom: 0;
 }
 
