@@ -399,18 +399,18 @@ const Home = () => {
             </section>
 
             
-            <section className="home-overview section-padding">
-                <div className="container grid grid-2" style={{"maxWidth": "900px", "margin": "0 auto", "alignItems": "center"}}>
+            <section className="home-overview section-padding" style={{"paddingTop": "3rem", "paddingBottom": "3rem"}}>
+                <div className="container grid grid-2" style={{"maxWidth": "750px", "margin": "0 auto", "alignItems": "center", "gap": "1.5rem"}}>
                     <div className="overview-text scroll-reveal slide-in-left">
-                        <span className="section-subtitle">Who We Are</span>
-                        <h2>Pioneering the Future of Industrial Manufacturing</h2>
-                        <p className="lead">At Fusion Services, we unite state-of-the-art machinery with unparalleled engineering expertise to solve the industry's most complex challenges.</p>
-                        <p>From custom prototyping to mass production, our facilities operate under strict ISO standards to guarantee quality, efficiency, and scalability for our enterprise clients.</p>
-                        <a href="#about" className="text-link hover-slide-arrow" onclick="navigateToPage('about')">Learn more about our journey <span className="arrow">&rarr;</span></a>
+                        <span className="section-subtitle" style={{"fontSize": "0.8rem", "marginBottom": "0.5rem"}}>Who We Are</span>
+                        <h2 style={{"fontSize": "1.8rem", "marginBottom": "1rem"}}>Pioneering the Future of Industrial Manufacturing</h2>
+                        <p className="lead" style={{"fontSize": "1rem", "marginBottom": "1rem"}}>At Fusion Services, we unite state-of-the-art machinery with unparalleled engineering expertise to solve the industry's most complex challenges.</p>
+                        <p style={{"fontSize": "0.9rem", "marginBottom": "1rem"}}>From custom prototyping to mass production, our facilities operate under strict ISO standards to guarantee quality, efficiency, and scalability for our enterprise clients.</p>
+                        <a href="#about" className="text-link hover-slide-arrow" onclick="navigateToPage('about')" style={{"fontSize": "0.9rem"}}>Learn more about our journey <span className="arrow">&rarr;</span></a>
                     </div>
                     <div className="overview-visual scroll-reveal slide-in-right">
                         <div className="image-wrapper hover-zoom-img">
-                            <img src="/assets/heavy_machinery.png" alt="Advanced industrial machinery in operation" style={{"maxHeight": "400px", "width": "100%", "objectFit": "cover"}} />
+                            <img src="/assets/heavy_machinery.png" alt="Advanced industrial machinery in operation" style={{"maxHeight": "280px", "width": "100%", "objectFit": "cover", "borderRadius": "8px"}} />
                             <div className="floating-badge pulse-badge">
                                 <span className="badge-num">10+</span>
                                 <span className="badge-txt">Years of Excellence</span>
