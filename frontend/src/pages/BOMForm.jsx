@@ -428,7 +428,7 @@ const BOMForm = () => {
                         </select>
                       </td>
                       <td className="p-2 font-semibold text-indigo-700 text-center">
-                        â‚¹{lineGst.toFixed(2)}
+                        ₹{lineGst.toFixed(2)}
                       </td>
                       <td className="p-2 font-semibold text-slate-900 text-center">
                         ₹{lineTotal}
