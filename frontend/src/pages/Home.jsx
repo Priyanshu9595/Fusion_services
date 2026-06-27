@@ -102,7 +102,7 @@ const Home = () => {
                 <li><a href="#services" className="mobile-link" data-page="services">Products & Services</a></li>
                 <li><a href="#portfolio" className="mobile-link" data-page="portfolio">Portfolio</a></li>
                 <li style={{ position: 'relative' }}>
-                    <div className="mobile-link" style={{display: 'flex', alignItems: 'center', color: 'white', cursor: 'pointer'}} onClick={(e) => {
+                    <div className="mobile-link" style={{display: 'flex', alignItems: 'center', color: '#0F2042', cursor: 'pointer'}} onClick={(e) => {
                         const menu = e.currentTarget.nextElementSibling;
                         menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
                     }}>
@@ -112,14 +112,15 @@ const Home = () => {
                     <div className="login-dropdown-menu" style={{
                         display: 'none',
                         flexDirection: 'column',
-                        paddingLeft: '2rem',
-                        paddingTop: '0.5rem',
-                        borderLeft: '2px solid rgba(255,255,255,0.1)',
+                        gap: '0.65rem',
+                        paddingLeft: '1rem',
+                        paddingTop: '0.75rem',
+                        borderLeft: '2px solid rgba(255, 107, 53, 0.35)',
                         marginLeft: '1.5rem',
                         marginTop: '0.5rem'
                     }}>
-                        <Link to="/login" style={{ padding: '0.5rem 0', color: 'rgba(255,255,255,0.85)', textDecoration: 'none', fontWeight: 600, fontSize: '1rem' }}>As an Admin</Link>
-                        <Link to="/login" style={{ padding: '0.5rem 0', color: 'rgba(255,255,255,0.85)', textDecoration: 'none', fontWeight: 600, fontSize: '1rem' }}>As a Staff</Link>
+                        <Link to="/login" style={{ padding: '0.7rem 0.9rem', color: '#0F2042', background: 'rgba(255, 107, 53, 0.1)', border: '1px solid rgba(255, 107, 53, 0.18)', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '1rem' }}>As an Admin</Link>
+                        <Link to="/login" style={{ padding: '0.7rem 0.9rem', color: '#0F2042', background: 'rgba(255, 107, 53, 0.1)', border: '1px solid rgba(255, 107, 53, 0.18)', borderRadius: '8px', textDecoration: 'none', fontWeight: 700, fontSize: '1rem' }}>As a Staff</Link>
                     </div>
                 </li>
                     <li><a href="#contact" className="mobile-link mobile-btn" data-page="contact">Contact Us</a></li>

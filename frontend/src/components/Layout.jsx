@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Users, FileText, Settings as SettingsIcon, LogOut, FilePlus, Menu, Contact } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -23,6 +23,7 @@ const SidebarItem = ({ to, icon: Icon, label, end }) => (
 const Layout = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -31,56 +32,84 @@ const Layout = () => {
 
   const isAdmin = user?.role === 'admin';
 
+  const closeSidebar = () => setSidebarOpen(false);
+
+  const sidebarContent = (
+    <>
+      <div className="h-20 flex items-center px-6 border-b border-gray-100">
+        <div className="w-9 h-9 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-indigo-500/30">
+          <FileText className="text-white w-5 h-5" />
+        </div>
+        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 to-purple-700 tracking-tight">
+          FusionDocs
+        </h1>
+      </div>
+
+      <nav className="flex-1 px-4 py-6 overflow-y-auto" onClick={closeSidebar}>
+        <SidebarItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" end />
+
+        <div className="mt-8 mb-4">
+          <p className="px-4 text-xs font-bold tracking-widest text-slate-400 uppercase">Documents</p>
+        </div>
+        <SidebarItem to="/documents/new" icon={FilePlus} label="Create New" />
+        <SidebarItem to="/documents" icon={FileText} label="History" />
+
+        <SidebarItem to="/customers" icon={Contact} label="Customers" />
+
+        {isAdmin && (
+          <div className="mt-8 mb-4">
+            <p className="px-4 text-xs font-bold tracking-widest text-slate-400 uppercase">Management</p>
+          </div>
+        )}
+        {isAdmin && <SidebarItem to="/staff" icon={Users} label="Staff Directory" />}
+        {isAdmin && <SidebarItem to="/settings" icon={SettingsIcon} label="Company Profile" />}
+      </nav>
+
+      <div className="p-4 border-t border-slate-100">
+        <button
+          onClick={handleLogout}
+          className="flex items-center w-full px-4 py-3 text-red-500 transition-colors rounded-xl hover:bg-red-50 hover:text-red-600 font-medium"
+        >
+          <LogOut className="w-5 h-5 mr-3" />
+          <span>Logout</span>
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <div className="flex h-screen font-sans bg-saas-pattern">
       {/* Sidebar */}
       <aside className="w-64 bg-white/70 backdrop-blur-2xl border-r border-white flex flex-col shadow-[8px_0_30px_rgba(0,0,0,0.03)] z-10 hidden md:flex">
-        <div className="h-20 flex items-center px-6 border-b border-gray-100">
-          <div className="w-9 h-9 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-indigo-500/30">
-            <FileText className="text-white w-5 h-5" />
-          </div>
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 to-purple-700 tracking-tight">
-            FusionDocs
-          </h1>
-        </div>
+        {sidebarContent}
+      </aside>
 
-        <nav className="flex-1 px-4 py-6 overflow-y-auto">
-          <SidebarItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" end />
-          
-          <div className="mt-8 mb-4">
-            <p className="px-4 text-xs font-bold tracking-widest text-slate-400 uppercase">Documents</p>
-          </div>
-          <SidebarItem to="/documents/new" icon={FilePlus} label="Create New" />
-          <SidebarItem to="/documents" icon={FileText} label="History" />
+      <div
+        className={`fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-40 transition-opacity md:hidden ${
+          sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={closeSidebar}
+      />
 
-          <SidebarItem to="/customers" icon={Contact} label="Customers" />
-
-          {isAdmin && (
-            <div className="mt-8 mb-4">
-              <p className="px-4 text-xs font-bold tracking-widest text-slate-400 uppercase">Management</p>
-            </div>
-          )}
-          {isAdmin && <SidebarItem to="/staff" icon={Users} label="Staff Directory" />}
-          {isAdmin && <SidebarItem to="/settings" icon={SettingsIcon} label="Company Profile" />}
-        </nav>
-
-        <div className="p-4 border-t border-slate-100">
-          <button
-            onClick={handleLogout}
-            className="flex items-center w-full px-4 py-3 text-red-500 transition-colors rounded-xl hover:bg-red-50 hover:text-red-600 font-medium"
-          >
-            <LogOut className="w-5 h-5 mr-3" />
-            <span>Logout</span>
-          </button>
-        </div>
+      <aside
+        className={`fixed inset-y-0 left-0 w-72 max-w-[82vw] bg-white border-r border-slate-100 flex flex-col shadow-2xl z-50 transition-transform duration-300 md:hidden ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {sidebarContent}
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden z-10">
         {/* Header */}
-        <header className="h-20 bg-white/70 backdrop-blur-2xl border-b border-white flex items-center justify-between px-8 shadow-[0_8px_30px_rgba(0,0,0,0.03)] z-20">
+        <header className="h-20 bg-white/70 backdrop-blur-2xl border-b border-white flex items-center justify-between px-5 md:px-8 shadow-[0_8px_30px_rgba(0,0,0,0.03)] z-20">
           <div className="flex items-center md:hidden">
-            <button className="text-gray-500 hover:text-gray-700 focus:outline-none">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="text-slate-700 hover:text-indigo-700 focus:outline-none p-2 -ml-2 rounded-xl active:bg-slate-100"
+              aria-label="Open dashboard menu"
+            >
               <Menu className="w-6 h-6" />
             </button>
             <h1 className="ml-3 text-xl font-bold text-gray-800">FusionDocs</h1>
@@ -104,7 +133,7 @@ const Layout = () => {
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto p-8 bg-transparent">
+        <div className="flex-1 overflow-auto p-5 md:p-8 bg-transparent">
           <div className="max-w-7xl mx-auto animate-fade-in-up">
             <Outlet />
           </div>
