@@ -47,32 +47,31 @@ const buildHtml = (documentData, companySettings) => {
   <meta charset="utf-8">
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #172033; background: #eef2f8; }
-    .sheet { min-height: 1085px; background: #fff; border-radius: 18px; overflow: hidden; border: 1px solid #e5eaf3; }
-    .header { display: flex; justify-content: space-between; gap: 24px; padding: 30px 36px; color: #fff; background: linear-gradient(135deg, #17124a, #5521a6 70%, #7c2d12); }
-    .brand { font-size: 30px; font-weight: 900; letter-spacing: .2px; }
-    .muted-light { color: #d9e3ff; font-size: 12px; line-height: 1.5; margin-top: 7px; max-width: 380px; }
-    .doc-title { text-align: right; font-size: 25px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
-    .doc-pill { margin-top: 10px; display: inline-block; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); font-size: 12px; }
-    .content { padding: 28px 36px 34px; }
-    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
-    .card { border: 1px solid #e5eaf3; border-radius: 14px; background: #f8fafc; padding: 16px; min-height: 104px; }
-    .label { font-size: 10px; font-weight: 800; color: #64748b; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
-    .strong { font-size: 15px; font-weight: 800; color: #111827; margin-bottom: 5px; }
-    .line { font-size: 12px; color: #475569; line-height: 1.45; }
-    table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #e5eaf3; border-radius: 14px; overflow: hidden; }
-    th { background: #111827; color: #fff; font-size: 10px; padding: 10px 8px; text-align: left; text-transform: uppercase; letter-spacing: .05em; }
-    td { font-size: 11px; padding: 10px 8px; border-bottom: 1px solid #edf1f7; color: #1f2937; vertical-align: top; }
-    tr:nth-child(even) td { background: #f8fafc; }
-    tr:last-child td { border-bottom: none; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #111827; background: #fff; }
+    .sheet { min-height: 1085px; background: #fff; border: 1.5px solid #1f2937; }
+    .header { padding: 24px 32px 18px; text-align: center; border-bottom: 2px solid #1f2937; }
+    .brand { font-size: 29px; font-weight: 900; letter-spacing: .3px; color: #1e3a8a; text-transform: uppercase; }
+    .muted-light { color: #374151; font-size: 11px; line-height: 1.45; margin-top: 6px; }
+    .doc-title { text-align: center; font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: #111827; background: #eef2ff; border-top: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; padding: 10px; }
+    .doc-pill { display: none; }
+    .content { padding: 24px 32px 30px; }
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+    .card { border: 1px solid #cbd5e1; padding: 13px; min-height: 96px; }
+    .label { font-size: 10px; font-weight: 800; color: #334155; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px; }
+    .strong { font-size: 14px; font-weight: 800; color: #111827; margin-bottom: 5px; }
+    .line { font-size: 11px; color: #374151; line-height: 1.45; }
+    table { width: 100%; border-collapse: collapse; border: 1px solid #1f2937; }
+    th { background: #f1f5f9; color: #111827; font-size: 10px; padding: 9px 7px; text-align: left; text-transform: uppercase; border: 1px solid #94a3b8; }
+    td { font-size: 10.5px; padding: 8px 7px; border: 1px solid #cbd5e1; color: #111827; vertical-align: top; }
+    tr:nth-child(even) td { background: #fafafa; }
     .right { text-align: right; }
     .item { font-weight: 700; color: #111827; }
-    .totals-wrap { display: flex; justify-content: space-between; gap: 24px; margin-top: 24px; align-items: flex-start; }
-    .terms { flex: 1; font-size: 11px; color: #475569; line-height: 1.5; }
-    .totals { width: 320px; color: #fff; background: linear-gradient(135deg, #17124a, #5521a6); border-radius: 16px; padding: 16px; }
-    .total-row { display: flex; justify-content: space-between; padding: 7px 0; font-size: 12px; color: #e5e7eb; }
-    .grand { margin-top: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.22); font-size: 17px; font-weight: 900; color: #ffbf75; }
-    .footer { margin-top: 34px; display: flex; justify-content: space-between; border-top: 1px solid #e5eaf3; padding-top: 18px; color: #64748b; font-size: 10px; }
+    .totals-wrap { display: flex; justify-content: space-between; gap: 24px; margin-top: 22px; align-items: flex-start; }
+    .terms { flex: 1; font-size: 10.5px; color: #374151; line-height: 1.5; border: 1px solid #cbd5e1; padding: 12px; min-height: 96px; }
+    .totals { width: 300px; border: 1px solid #1f2937; }
+    .total-row { display: flex; justify-content: space-between; padding: 9px 11px; font-size: 11px; color: #111827; border-bottom: 1px solid #cbd5e1; }
+    .grand { border-bottom: 0; font-size: 15px; font-weight: 900; background: #eef2ff; color: #1e3a8a; }
+    .footer { margin-top: 42px; display: flex; justify-content: space-between; border-top: 1px solid #cbd5e1; padding-top: 18px; color: #475569; font-size: 10px; }
   </style>
 </head>
 <body>
@@ -82,11 +81,8 @@ const buildHtml = (documentData, companySettings) => {
         <div class="brand">${escapeHtml(companySettings.name || 'Fusion Services')}</div>
         <div class="muted-light">${escapeHtml(companySettings.address || 'Address Not Provided').replace(/\n/g, '<br>')}<br>GSTIN: ${escapeHtml(companySettings.gstin || 'N/A')}</div>
       </div>
-      <div>
-        <div class="doc-title">${escapeHtml(docTitle)}</div>
-        <div class="doc-pill">${escapeHtml(documentData.document_number || '-')} | ${escapeHtml(documentData.date || '-')}</div>
-      </div>
     </div>
+    <div class="doc-title">${escapeHtml(docTitle)}</div>
     <div class="content">
       <div class="cards">
         <div class="card">
@@ -161,31 +157,34 @@ const buildFallbackPdf = (documentData, companySettings) => {
     const title = getDocTitle(documentData.type);
     const items = (documentData.items || []).slice(0, 12);
     const content = [
-        'q', '0.10 0.12 0.28 rg', '0 735 595 107 re f', '0.42 0.21 0.86 rg', '0 735 180 107 re f', '1 1 1 rg',
-        ...pdfText(companySettings.name || 'Fusion Services', 42, 800, 24, true),
-        ...pdfText(companySettings.address || 'Professional Documents by FusionDocs', 42, 778, 9, false, 58),
-        ...pdfText(`GSTIN: ${companySettings.gstin || 'N/A'}`, 42, 758, 9, false),
-        ...pdfText(title.toUpperCase(), 390, 800, 18, true),
-        ...pdfText(`${documentData.document_number || '-'} | ${documentData.date || '-'}`, 390, 776, 10, false),
-        'Q',
-        '0.98 0.98 1 rg', '38 626 250 82 re f', '0.93 0.94 0.98 RG', '38 626 250 82 re S',
-        '0.14 0.16 0.26 rg', ...pdfText(isChallan ? 'SHIP TO' : 'BILLED TO', 54, 684, 9, true),
-        ...pdfText(documentData.customer_name || '-', 54, 664, 14, true, 34),
-        ...pdfText(isChallan ? (documentData.shipping_address || documentData.billing_address || '-') : (documentData.billing_address || '-'), 54, 646, 9, false, 42),
-        ...pdfText(documentData.phone || '-', 54, 632, 9, false, 42),
-        '0.98 0.98 1 rg', '307 626 250 82 re f', '0.93 0.94 0.98 RG', '307 626 250 82 re S',
-        '0.14 0.16 0.26 rg', ...pdfText('DOCUMENT INFO', 323, 684, 9, true),
-        ...pdfText(`No: ${documentData.document_number || '-'}`, 323, 664, 11, true),
-        ...pdfText(`Type: ${title}`, 323, 646, 9, false), ...pdfText('Status: Saved', 323, 632, 9, false),
-        '0.10 0.12 0.28 rg', '38 574 519 28 re f', '1 1 1 rg',
-        ...pdfText('ITEM', 48, 592, 8, true), ...pdfText('HSN', 210, 592, 8, true), ...pdfText('QTY', 260, 592, 8, true),
-        ...pdfText('RATE', 313, 592, 8, true), ...pdfText('GST', 372, 592, 8, true), ...pdfText('GST AMT', 420, 592, 8, true), ...pdfText('TOTAL', 500, 592, 8, true),
+        '0.12 0.16 0.24 RG', '30 30 535 780 re S',
+        '0.12 0.16 0.24 rg',
+        ...pdfText(companySettings.name || 'Fusion Services', 188, 800, 22, true),
+        ...pdfText(companySettings.address || 'Address Not Provided', 118, 778, 9, false, 58),
+        ...pdfText(`GSTIN: ${companySettings.gstin || 'N/A'}`, 230, 762, 9, false),
+        '0.12 0.16 0.24 RG', '30 744 535 0.8 re S',
+        '0.93 0.95 1 rg', '30 706 535 28 re f',
+        '0.12 0.16 0.24 rg', ...pdfText(title.toUpperCase(), 250, 724, 14, true),
+        '0.12 0.16 0.24 RG', '30 706 535 28 re S',
+        '0.99 0.99 1 rg', '42 604 242 82 re f', '0.70 0.75 0.84 RG', '42 604 242 82 re S',
+        '0.12 0.16 0.24 rg', ...pdfText(isChallan ? 'SHIP TO' : 'BILLED TO', 56, 666, 9, true),
+        ...pdfText(documentData.customer_name || '-', 56, 648, 13, true, 34),
+        ...pdfText(isChallan ? (documentData.shipping_address || documentData.billing_address || '-') : (documentData.billing_address || '-'), 56, 630, 9, false, 40),
+        ...pdfText(documentData.phone || '-', 56, 616, 9, false, 40),
+        '0.99 0.99 1 rg', '311 604 242 82 re f', '0.70 0.75 0.84 RG', '311 604 242 82 re S',
+        '0.12 0.16 0.24 rg', ...pdfText('DOCUMENT INFO', 325, 666, 9, true),
+        ...pdfText(`No: ${documentData.document_number || '-'}`, 325, 648, 11, true),
+        ...pdfText(`Date: ${documentData.date || '-'}`, 325, 630, 9, false), ...pdfText('Status: Saved', 325, 616, 9, false),
+        '0.93 0.95 1 rg', '42 558 511 26 re f', '0.12 0.16 0.24 RG', '42 558 511 26 re S',
+        '0.12 0.16 0.24 rg',
+        ...pdfText('ITEM', 52, 575, 8, true), ...pdfText('HSN', 208, 575, 8, true), ...pdfText('QTY', 258, 575, 8, true),
+        ...pdfText('RATE', 310, 575, 8, true), ...pdfText('GST', 370, 575, 8, true), ...pdfText('GST AMT', 418, 575, 8, true), ...pdfText('TOTAL', 498, 575, 8, true),
         ...fallbackRows(items, isChallan),
         ...(!isChallan ? fallbackTotals(documentData) : []),
-        '0.14 0.16 0.26 rg', ...pdfText('Bank Details', 38, 142, 10, true), ...pdfText(companySettings.bank_details || 'N/A', 38, 126, 8, false, 52),
-        ...pdfText('Terms', 38, 100, 10, true), ...pdfText(companySettings.terms || 'Payment as per agreed commercial terms.', 38, 84, 8, false, 58),
-        '0.78 0.80 0.86 RG', '38 58 519 0.8 re S', '0.44 0.48 0.58 rg',
-        ...pdfText('Generated securely by FusionDocs', 38, 38, 8, false), ...pdfText('Authorized Signatory', 430, 38, 8, true),
+        '0.12 0.16 0.24 rg', ...pdfText('Bank Details', 42, 136, 10, true), ...pdfText(companySettings.bank_details || 'N/A', 42, 120, 8, false, 52),
+        ...pdfText('Terms', 42, 94, 10, true), ...pdfText(companySettings.terms || 'Payment as per agreed commercial terms.', 42, 78, 8, false, 58),
+        '0.70 0.75 0.84 RG', '42 58 511 0.8 re S', '0.32 0.36 0.45 rg',
+        ...pdfText('Generated securely by FusionDocs', 42, 38, 8, false), ...pdfText('Authorized Signatory', 430, 38, 8, true),
     ].join('\n');
     return writePdf(content);
 };
