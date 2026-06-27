@@ -5,6 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
 import { API_URL } from '../config/api';
 
+const normalizeGstPercent = (value) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return 18;
+  return parsed;
+};
+
 const BOMForm = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -100,7 +106,7 @@ const BOMForm = () => {
             qty: item.qty || 1,
             unit: item.unit || 'Nos',
             unit_price: item.unit_price || 0,
-            gst_percent: item.gst_percent || 18
+            gst_percent: normalizeGstPercent(item.gst_percent)
           }));
           // If there's only one empty item initially, replace it. Otherwise append.
           if (items.length === 1 && !items[0].item_name && !items[0].unit_price) {
@@ -130,7 +136,7 @@ const BOMForm = () => {
 
     items.forEach(item => {
       const lineSubtotal = (item.qty || 0) * (item.unit_price || 0);
-      const lineGst = (lineSubtotal * (item.gst_percent || 0)) / 100;
+      const lineGst = (lineSubtotal * normalizeGstPercent(item.gst_percent)) / 100;
       subtotal += lineSubtotal;
       totalGst += lineGst;
     });
@@ -187,7 +193,10 @@ const BOMForm = () => {
           customer_id: finalCustomerId,
           date,
           discount: Number(discount),
-          items: items.map(({ id, ...rest }) => rest) // remove temp id
+          items: items.map(({ id, ...rest }) => ({
+            ...rest,
+            gst_percent: normalizeGstPercent(rest.gst_percent)
+          })) // remove temp id and enforce default GST
         })
       });
 
@@ -352,7 +361,7 @@ const BOMForm = () => {
               <tbody className="divide-y divide-slate-100">
                 {items.map((item, index) => {
                   const lineSubtotal = (item.qty || 0) * (item.unit_price || 0);
-                  const lineGst = (lineSubtotal * (item.gst_percent || 0)) / 100;
+                  const lineGst = (lineSubtotal * normalizeGstPercent(item.gst_percent)) / 100;
                   const lineTotal = (lineSubtotal + lineGst).toFixed(2);
 
                   return (
@@ -407,10 +416,9 @@ const BOMForm = () => {
                           onChange={(e) => handleItemChange(item.id, 'gst_percent', Number(e.target.value))}
                           className="w-full px-3 py-2 bg-slate-50 border border-slate-200 focus:bg-white rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-slate-800"
                         >
-                          <option value="0">0%</option>
+                          <option value="18">18%</option>
                           <option value="5">5%</option>
                           <option value="12">12%</option>
-                          <option value="18">18%</option>
                           <option value="28">28%</option>
                         </select>
                       </td>

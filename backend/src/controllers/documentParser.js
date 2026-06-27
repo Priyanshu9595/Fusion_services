@@ -122,9 +122,7 @@ exports.parseDocument = async (req, res) => {
         if (parsedData.items && Array.isArray(parsedData.items)) {
             parsedData.items = parsedData.items.map(item => ({
                 ...item,
-                gst_percent: (item.gst_percent !== undefined && item.gst_percent !== null && item.gst_percent !== "") 
-                    ? Number(item.gst_percent) 
-                    : 18
+                gst_percent: normalizeParsedGst(item.gst_percent)
             }));
         }
 
@@ -133,4 +131,10 @@ exports.parseDocument = async (req, res) => {
         console.error('Error parsing document with Groq:', error);
         res.status(500).json({ error: 'Failed to process document with AI: ' + (error.message || error.toString()) });
     }
+};
+
+const normalizeParsedGst = (value) => {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || parsed <= 0) return 18;
+    return parsed;
 };

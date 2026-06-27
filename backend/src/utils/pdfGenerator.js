@@ -1,4 +1,3 @@
-const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 
@@ -171,6 +170,7 @@ const generatePDF = async (documentData, companySettings) => {
 
     let browser;
     try {
+        const puppeteer = require('puppeteer');
         browser = await puppeteer.launch(launchOptions);
         const page = await browser.newPage();
         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
@@ -237,24 +237,77 @@ const generateFallbackPDF = async (documentData, companySettings) => {
 };
 
 const createSimplePDF = (lines) => {
-    const pageHeight = 842;
-    const safeLines = lines.flatMap((line) => wrapLine(String(line || ''), 92)).slice(0, 34);
+    const doc = buildStructuredData(lines);
     const content = [
-        'BT',
-        '/F1 18 Tf',
-        '50 790 Td',
-        `(${escapePdfText(safeLines[0] || 'FusionDocs')}) Tj`,
-        '/F1 10 Tf',
-        ...safeLines.slice(1).map((line) => `0 -20 Td (${escapePdfText(line)}) Tj`),
-        'ET',
+        'q',
+        '0.11 0.10 0.36 rg',
+        '0 742 595 100 re f',
+        '0.43 0.25 0.93 rg',
+        '0 742 160 100 re f',
+        '1 1 1 rg',
+        ...text(doc.company, 44, 798, 24, true),
+        ...text(doc.title, 44, 770, 13, false),
+        'Q',
+
+        '0.96 0.97 1 rg',
+        '380 766 160 34 re f',
+        '0.11 0.10 0.36 rg',
+        ...text(doc.number, 395, 787, 12, true),
+        ...text(doc.date, 395, 772, 9, false),
+
+        '0.16 0.20 0.32 rg',
+        ...text('BILLED TO', 44, 710, 9, true),
+        ...text(doc.customer, 44, 690, 15, true),
+        ...text(doc.address, 44, 671, 9, false),
+        ...text(doc.gstin, 44, 656, 9, false),
+        ...text(doc.phone, 44, 641, 9, false),
+
+        '0.16 0.20 0.32 rg',
+        ...text('DOCUMENT INFO', 372, 710, 9, true),
+        ...text(doc.number, 372, 690, 12, true),
+        ...text(doc.date, 372, 672, 10, false),
+        ...text('Status: Saved', 372, 654, 10, false),
+
+        '0.96 0.97 1 rg',
+        '44 582 507 30 re f',
+        '0.16 0.20 0.32 rg',
+        ...text('ITEM', 58, 600, 9, true),
+        ...text('QTY', 310, 600, 9, true),
+        ...text('GST', 372, 600, 9, true),
+        ...text('TOTAL', 470, 600, 9, true),
+        ...buildTableRows(doc.items),
+
+        '0.11 0.10 0.36 rg',
+        '338 178 213 105 re f',
+        '1 1 1 rg',
+        ...text('Subtotal', 358, 254, 10, false),
+        ...text(doc.subtotal, 470, 254, 10, true),
+        ...text('Total GST', 358, 230, 10, false),
+        ...text(doc.totalGst, 470, 230, 10, true),
+        '1.00 0.65 0.34 rg',
+        ...text('Grand Total', 358, 202, 13, true),
+        ...text(doc.grandTotal, 462, 202, 15, true),
+
+        '0.16 0.20 0.32 rg',
+        ...text('Bank Details', 44, 254, 10, true),
+        ...text(doc.bank, 44, 236, 9, false),
+        ...text('Terms', 44, 208, 10, true),
+        ...text(doc.terms, 44, 190, 9, false),
+
+        '0.80 0.84 0.92 RG',
+        '44 132 507 0.8 re S',
+        '0.45 0.50 0.60 rg',
+        ...text('Generated securely by FusionDocs', 44, 108, 9, false),
+        ...text('Authorized Signatory', 418, 108, 9, true),
     ].join('\n');
 
     const objects = [
         '<< /Type /Catalog /Pages 2 0 R >>',
         '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 ${pageHeight}] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>`,
+        '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R /F2 6 0 R >> >> /Contents 5 0 R >>',
         '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
         `<< /Length ${Buffer.byteLength(content)} >>\nstream\n${content}\nendstream`,
+        '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>',
     ];
 
     let pdf = '%PDF-1.4\n';
@@ -273,6 +326,85 @@ const createSimplePDF = (lines) => {
     pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
     return Buffer.from(pdf, 'utf8');
 };
+
+const buildStructuredData = (lines) => {
+    const get = (prefix) => (lines.find((line) => String(line).startsWith(prefix)) || '').replace(prefix, '').trim();
+    const itemStart = lines.indexOf('Line Items') + 1;
+    const itemEnd = lines.findIndex((line, index) => index > itemStart && String(line).startsWith('Subtotal:'));
+    return {
+        company: lines[0] || 'Fusion Services',
+        title: lines[1] || 'Document',
+        number: get('Document No:') || '-',
+        date: get('Date:') || '-',
+        customer: get('Billed To:') || get('Shipping To:') || '-',
+        address: get('Address:') || '-',
+        gstin: get('Customer GSTIN:') || 'N/A',
+        phone: get('Phone:') || '-',
+        items: lines.slice(itemStart, itemEnd > -1 ? itemEnd : itemStart + 5).filter(Boolean).slice(0, 8),
+        subtotal: get('Subtotal:') || 'Rs. 0',
+        totalGst: get('Total GST:') || 'Rs. 0',
+        grandTotal: get('Grand Total:') || 'Rs. 0',
+        bank: get('Bank Details:') || 'N/A',
+        terms: get('Terms:') || 'N/A',
+    };
+};
+
+const buildTableRows = (items) => {
+    const commands = [];
+    let y = 554;
+    items.forEach((item, index) => {
+        const parts = parseItemLine(item);
+        if (index % 2 === 0) {
+            commands.push('0.99 0.99 1 rg', `44 ${y - 13} 507 38 re f`);
+        }
+        commands.push(
+            '0.16 0.20 0.32 rg',
+            ...text(parts.name, 58, y, 9, true),
+            ...text(parts.qty, 310, y, 9, false),
+            ...text(parts.gst, 372, y, 9, false),
+            ...text(parts.total, 470, y, 9, true)
+        );
+        y -= 42;
+    });
+    return commands;
+};
+
+const parseItemLine = (line) => {
+    const clean = String(line || '');
+    const name = clean.replace(/^\d+\.\s*/, '').split('| HSN:')[0].trim();
+    return {
+        name: truncate(name, 42),
+        qty: extractBetween(clean, '| Qty:', '| Price:') || extractBetween(clean, '| Qty:', '|') || '-',
+        gst: extractBetween(clean, '| GST:', '| Total:') || '-',
+        total: extractAfter(clean, '| Total:') || '-',
+    };
+};
+
+const text = (value, x, y, size = 10, bold = false) => {
+    const font = bold ? '/F2' : '/F1';
+    return [
+        'BT',
+        `${font} ${size} Tf`,
+        `${x} ${y} Td`,
+        `(${escapePdfText(truncate(String(value || ''), 68))}) Tj`,
+        'ET',
+    ];
+};
+
+const extractBetween = (value, start, end) => {
+    const startIndex = value.indexOf(start);
+    if (startIndex === -1) return '';
+    const rest = value.slice(startIndex + start.length);
+    const endIndex = rest.indexOf(end);
+    return (endIndex === -1 ? rest : rest.slice(0, endIndex)).trim();
+};
+
+const extractAfter = (value, marker) => {
+    const index = value.indexOf(marker);
+    return index === -1 ? '' : value.slice(index + marker.length).trim();
+};
+
+const truncate = (value, maxLength) => value.length > maxLength ? `${value.slice(0, maxLength - 3)}...` : value;
 
 const wrapLine = (line, maxLength) => {
     if (line.length <= maxLength) return [line];

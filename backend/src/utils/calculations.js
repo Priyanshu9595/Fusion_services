@@ -1,11 +1,12 @@
 // Utility for exact GST calculations
 
 const calculateLineItem = (qty, unitPrice, gstPercent) => {
+    const effectiveGstPercent = normalizeGstPercent(gstPercent);
     const subtotal = Number((qty * unitPrice).toFixed(2));
-    const gstAmount = Number(((subtotal * gstPercent) / 100).toFixed(2));
+    const gstAmount = Number(((subtotal * effectiveGstPercent) / 100).toFixed(2));
     const total = Number((subtotal + gstAmount).toFixed(2));
     
-    return { subtotal, gstAmount, total };
+    return { subtotal, gstAmount, total, gstPercent: effectiveGstPercent };
 };
 
 const calculateDocumentTotals = (items, discount = 0) => {
@@ -18,6 +19,7 @@ const calculateDocumentTotals = (items, discount = 0) => {
         totalGst += calc.gstAmount;
         return {
             ...item,
+            gst_percent: calc.gstPercent,
             line_subtotal: calc.subtotal,
             line_gst_amount: calc.gstAmount,
             line_total: calc.total
@@ -36,4 +38,10 @@ const calculateDocumentTotals = (items, discount = 0) => {
     };
 };
 
-module.exports = { calculateLineItem, calculateDocumentTotals };
+const normalizeGstPercent = (value) => {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || parsed <= 0) return 18;
+    return parsed;
+};
+
+module.exports = { calculateLineItem, calculateDocumentTotals, normalizeGstPercent };
