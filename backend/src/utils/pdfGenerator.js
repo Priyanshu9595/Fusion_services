@@ -2,10 +2,11 @@ const fs = require('fs');
 const path = require('path');
 
 const generatePDF = async (documentData, companySettings = {}) => {
+    const normalized = normalizeDocumentData(documentData, companySettings);
     const dir = path.join(__dirname, '../../temp');
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-    const filePath = path.join(dir, `${safeFileName(documentData.document_number || 'document')}.pdf`);
+    const filePath = path.join(dir, `${safeFileName(normalized.documentNumber || 'document')}.pdf`);
 
     try {
         const puppeteer = require('puppeteer');
@@ -17,12 +18,13 @@ const generatePDF = async (documentData, companySettings = {}) => {
 
         try {
             const page = await browser.newPage();
-            await page.setContent(buildHtml(documentData, companySettings), { waitUntil: 'networkidle0' });
+            await page.setContent(buildHtml(normalized), { waitUntil: 'networkidle0' });
             await page.pdf({
                 path: filePath,
                 format: 'A4',
                 printBackground: true,
-                margin: { top: '18px', right: '18px', bottom: '18px', left: '18px' }
+                preferCSSPageSize: true,
+                margin: { top: '16mm', right: '14mm', bottom: '14mm', left: '14mm' }
             });
             return filePath;
         } finally {
@@ -30,203 +32,407 @@ const generatePDF = async (documentData, companySettings = {}) => {
         }
     } catch (error) {
         console.error('Puppeteer PDF generation failed, using fallback PDF:', error.message);
-        fs.writeFileSync(filePath, buildFallbackPdf(documentData, companySettings));
+        fs.writeFileSync(filePath, buildFallbackPdf(normalized));
         return filePath;
     }
 };
 
-const buildHtml = (documentData, companySettings) => {
-    const isChallan = documentData.type === 'challan';
-    const docTitle = getDocTitle(documentData.type);
-    const items = documentData.items || [];
+const normalizeDocumentData = (documentData = {}, companySettings = {}) => {
+    const documentType = normalizeDocumentType(documentData.documentType || documentData.type);
+    const isChallan = documentType === 'challan';
+    const products = (documentData.products || documentData.items || []).map((item, index) => normalizeProduct(item, index, isChallan));
+    const computedTotals = calculateTotals(products, isChallan);
 
-    return `
-<!doctype html>
+    return {
+        company: {
+            name: cleanValue(documentData.company?.name || companySettings.name || 'Fusion Services'),
+            address: cleanValue(documentData.company?.address || companySettings.address || 'Address Not Provided'),
+            gstin: cleanValue(documentData.company?.gstin || companySettings.gstin || 'N/A'),
+            bankDetails: cleanValue(documentData.company?.bankDetails || companySettings.bank_details || 'N/A'),
+            terms: cleanValue(documentData.company?.terms || companySettings.terms || 'Payment as per agreed commercial terms.')
+        },
+        customer: {
+            name: cleanValue(documentData.customer?.name || documentData.customer_name || '-'),
+            address: cleanValue(documentData.customer?.address || documentData.billing_address || documentData.shipping_address || '-'),
+            shippingAddress: cleanValue(documentData.customer?.shippingAddress || documentData.shipping_address || documentData.billing_address || '-'),
+            gstin: cleanValue(documentData.customer?.gstin || documentData.customer_gstin || 'N/A'),
+            phone: cleanValue(documentData.customer?.phone || documentData.phone || '-')
+        },
+        documentType,
+        documentNumber: cleanValue(documentData.documentNumber || documentData.document_number || '-'),
+        date: cleanValue(documentData.date || new Date().toISOString().slice(0, 10)),
+        status: cleanValue(documentData.status || 'Saved'),
+        products,
+        totals: {
+            subtotal: computedTotals.subtotal,
+            totalGST: computedTotals.totalGST,
+            grandTotal: computedTotals.grandTotal
+        }
+    };
+};
+
+const normalizeProduct = (item = {}, index, isChallan) => {
+    const quantity = toNumber(item.quantity ?? item.qty, 0);
+    const unitPrice = toNumber(item.unitPrice ?? item.unit_price, 0);
+    const gstRate = normalizeGstRate(item.gstRate ?? item.gst_percent, isChallan);
+    const taxableAmount = round2(quantity * unitPrice);
+    const gstAmount = round2(taxableAmount * gstRate / 100);
+    const lineTotal = round2(taxableAmount + gstAmount);
+
+    return {
+        index: index + 1,
+        itemName: cleanValue(item.itemName || item.item_name || item.name || '-'),
+        hsnCode: cleanValue(item.hsnCode || item.hsn || '-'),
+        quantity,
+        unit: cleanValue(item.unit || 'Nos'),
+        unitPrice,
+        gstRate,
+        taxableAmount: pickNumber(item.taxableAmount, item.line_subtotal, taxableAmount),
+        gstAmount: pickNumber(item.gstAmount, item.line_gst_amount, gstAmount),
+        lineTotal: pickNumber(item.lineTotal, item.line_total, lineTotal),
+        remarks: cleanValue(item.remarks || item.description || '-')
+    };
+};
+
+const calculateTotals = (products, isChallan) => {
+    if (isChallan) return { subtotal: 0, totalGST: 0, grandTotal: 0 };
+
+    return products.reduce((totals, product) => ({
+        subtotal: round2(totals.subtotal + product.taxableAmount),
+        totalGST: round2(totals.totalGST + product.gstAmount),
+        grandTotal: round2(totals.grandTotal + product.lineTotal)
+    }), { subtotal: 0, totalGST: 0, grandTotal: 0 });
+};
+
+const buildHtml = (documentData) => {
+    const meta = getDocMeta(documentData.documentType);
+    const isChallan = documentData.documentType === 'challan';
+    const customerAddress = isChallan ? documentData.customer.shippingAddress : documentData.customer.address;
+
+    return `<!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
   <style>
+    @page { size: A4; margin: 16mm 14mm 14mm; }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #111827; background: #fff; }
-    .sheet { min-height: 1085px; background: #fff; border: 1.5px solid #1f2937; }
-    .header { padding: 24px 32px 18px; text-align: center; border-bottom: 2px solid #1f2937; }
-    .brand { font-size: 29px; font-weight: 900; letter-spacing: .3px; color: #1e3a8a; text-transform: uppercase; }
-    .muted-light { color: #374151; font-size: 11px; line-height: 1.45; margin-top: 6px; }
-    .doc-title { text-align: center; font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: #111827; background: #eef2ff; border-top: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; padding: 10px; }
-    .doc-pill { display: none; }
-    .content { padding: 24px 32px 30px; }
-    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
-    .card { border: 1px solid #cbd5e1; padding: 13px; min-height: 96px; }
-    .label { font-size: 10px; font-weight: 800; color: #334155; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px; }
-    .strong { font-size: 14px; font-weight: 800; color: #111827; margin-bottom: 5px; }
-    .line { font-size: 11px; color: #374151; line-height: 1.45; }
-    table { width: 100%; border-collapse: collapse; border: 1px solid #1f2937; }
-    th { background: #f1f5f9; color: #111827; font-size: 10px; padding: 9px 7px; text-align: left; text-transform: uppercase; border: 1px solid #94a3b8; }
-    td { font-size: 10.5px; padding: 8px 7px; border: 1px solid #cbd5e1; color: #111827; vertical-align: top; }
-    tr:nth-child(even) td { background: #fafafa; }
-    .right { text-align: right; }
-    .item { font-weight: 700; color: #111827; }
-    .totals-wrap { display: flex; justify-content: space-between; gap: 24px; margin-top: 22px; align-items: flex-start; }
-    .terms { flex: 1; font-size: 10.5px; color: #374151; line-height: 1.5; border: 1px solid #cbd5e1; padding: 12px; min-height: 96px; }
-    .totals { width: 300px; border: 1px solid #1f2937; }
-    .total-row { display: flex; justify-content: space-between; padding: 9px 11px; font-size: 11px; color: #111827; border-bottom: 1px solid #cbd5e1; }
-    .grand { border-bottom: 0; font-size: 15px; font-weight: 900; background: #eef2ff; color: #1e3a8a; }
-    .footer { margin-top: 42px; display: flex; justify-content: space-between; border-top: 1px solid #cbd5e1; padding-top: 18px; color: #475569; font-size: 10px; }
+    body {
+      margin: 0;
+      color: #172033;
+      background: #fff;
+      font-family: "DejaVu Sans", "Noto Sans", Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .document { width: 100%; background: #fff; }
+    .header { text-align: center; padding-bottom: 13px; border-bottom: 3px solid #2563eb; }
+    .company-name { margin: 0; color: #1d4ed8; font-size: 28px; font-weight: 800; letter-spacing: .2px; }
+    .company-meta { margin-top: 5px; color: #475569; font-size: 10.5px; }
+    .title { margin: 14px 0 18px; text-align: center; color: #0f172a; font-size: 18px; font-weight: 800; letter-spacing: 1.3px; text-transform: uppercase; }
+    .top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+    .info-card { border: 1px solid #cbd5e1; border-radius: 10px; overflow: hidden; background: #fff; }
+    .card-label { padding: 8px 11px; background: #f1f5f9; color: #1d4ed8; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; border-bottom: 1px solid #dbe4f0; }
+    .card-body { padding: 11px; min-height: 92px; }
+    .customer-name, .doc-number { color: #0f172a; font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+    .detail-line { color: #334155; margin-top: 3px; overflow-wrap: anywhere; }
+    .section-title { margin: 17px 0 10px; color: #0f172a; font-size: 13px; font-weight: 800; }
+    .product-card {
+      page-break-inside: avoid;
+      break-inside: avoid;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0 0 10px;
+      background: #fff;
+    }
+    .product-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 9px 12px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .product-index { color: #2563eb; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+    .product-name { color: #0f172a; font-size: 13px; font-weight: 800; text-align: right; overflow-wrap: anywhere; }
+    .product-body { padding: 10px 12px 12px; }
+    .product-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 18px; row-gap: 6px; }
+    .field { display: grid; grid-template-columns: 112px 1fr; gap: 8px; align-items: baseline; min-width: 0; }
+    .field .label { color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .field .value { color: #111827; font-size: 11.5px; overflow-wrap: anywhere; }
+    .amount .value { text-align: right; font-variant-numeric: tabular-nums; }
+    .line-total .value { color: #0f172a; font-size: 13px; font-weight: 900; }
+    .summary-row { display: flex; justify-content: flex-end; margin-top: 18px; page-break-inside: avoid; break-inside: avoid; }
+    .summary-card { width: 310px; border: 1px solid #cbd5e1; border-radius: 10px; overflow: hidden; background: #fff; }
+    .summary-card .card-label { color: #0f172a; }
+    .total-line { display: flex; justify-content: space-between; gap: 14px; padding: 8px 12px; border-bottom: 1px solid #e2e8f0; color: #334155; }
+    .total-line strong { color: #0f172a; font-variant-numeric: tabular-nums; }
+    .grand-total { background: #eff6ff; color: #1d4ed8; font-size: 15px; font-weight: 900; border-bottom: 0; }
+    .grand-total strong { color: #1d4ed8; font-size: 17px; }
+    .business-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; page-break-inside: avoid; break-inside: avoid; }
+    .note-box { border: 1px solid #dbe4f0; border-radius: 10px; padding: 10px 12px; color: #334155; min-height: 72px; }
+    .note-title { color: #0f172a; font-weight: 800; margin-bottom: 4px; }
+    .signature { display: flex; justify-content: flex-end; margin-top: 34px; page-break-inside: avoid; break-inside: avoid; }
+    .signature-box { width: 230px; padding-top: 26px; border-top: 1px solid #94a3b8; text-align: center; color: #0f172a; font-weight: 800; }
+    .signature-box span { display: block; margin-top: 4px; color: #475569; font-size: 10.5px; font-weight: 700; }
+    .footer { margin-top: 18px; padding-top: 10px; border-top: 1px solid #e2e8f0; text-align: center; color: #64748b; font-size: 10px; }
   </style>
 </head>
 <body>
-  <div class="sheet">
-    <div class="header">
-      <div>
-        <div class="brand">${escapeHtml(companySettings.name || 'Fusion Services')}</div>
-        <div class="muted-light">${escapeHtml(companySettings.address || 'Address Not Provided').replace(/\n/g, '<br>')}<br>GSTIN: ${escapeHtml(companySettings.gstin || 'N/A')}</div>
+  <main class="document">
+    <header class="header">
+      <h1 class="company-name">${escapeHtml(documentData.company.name)}</h1>
+      <div class="company-meta">
+        ${multiline(documentData.company.address)}<br>
+        GSTIN: ${escapeHtml(documentData.company.gstin)}
       </div>
-    </div>
-    <div class="doc-title">${escapeHtml(docTitle)}</div>
-    <div class="content">
-      <div class="cards">
-        <div class="card">
-          <div class="label">${isChallan ? 'Shipping To' : 'Billed To'}</div>
-          <div class="strong">${escapeHtml(documentData.customer_name || '-')}</div>
-          <div class="line">${escapeHtml(isChallan ? (documentData.shipping_address || documentData.billing_address || '-') : (documentData.billing_address || '-'))}</div>
-          ${!isChallan ? `<div class="line">GSTIN: ${escapeHtml(documentData.customer_gstin || 'N/A')}</div>` : ''}
-          ${documentData.phone ? `<div class="line">Phone: ${escapeHtml(documentData.phone)}</div>` : ''}
-        </div>
-        <div class="card">
-          <div class="label">Document Info</div>
-          <div class="strong">${escapeHtml(documentData.document_number || '-')}</div>
-          <div class="line">Date: ${escapeHtml(documentData.date || '-')}</div>
-          <div class="line">Status: ${escapeHtml(documentData.status || 'Saved')}</div>
+    </header>
+
+    <div class="title">${escapeHtml(meta.title)}</div>
+
+    <section class="top-grid">
+      <div class="info-card">
+        <div class="card-label">${isChallan ? 'Ship To' : 'Billed To'}</div>
+        <div class="card-body">
+          <div class="customer-name">${escapeHtml(documentData.customer.name)}</div>
+          <div class="detail-line">Address: ${escapeHtml(customerAddress)}</div>
+          ${isChallan ? '' : `<div class="detail-line">GSTIN: ${escapeHtml(documentData.customer.gstin)}</div>`}
+          <div class="detail-line">Phone: ${escapeHtml(documentData.customer.phone)}</div>
         </div>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th style="width:32px">#</th>
-            <th>Item</th>
-            <th>HSN</th>
-            <th>Qty</th>
-            ${isChallan ? '' : '<th class="right">Rate</th><th class="right">GST</th><th class="right">GST Amt</th><th class="right">Final Total</th>'}
-          </tr>
-        </thead>
-        <tbody>
-          ${items.map((item, index) => buildHtmlRow(item, index, isChallan)).join('')}
-        </tbody>
-      </table>
-      ${isChallan ? '' : `
-      <div class="totals-wrap">
-        <div class="terms">
-          <strong>Bank Details</strong><br>${escapeHtml(companySettings.bank_details || 'N/A').replace(/\n/g, '<br>')}<br><br>
-          <strong>Terms & Conditions</strong><br>${escapeHtml(companySettings.terms || 'Payment as per agreed commercial terms.').replace(/\n/g, '<br>')}
+
+      <div class="info-card">
+        <div class="card-label">Document Details</div>
+        <div class="card-body">
+          <div class="doc-number">${escapeHtml(meta.numberLabel)}: ${escapeHtml(documentData.documentNumber)}</div>
+          <div class="detail-line">Date: ${escapeHtml(documentData.date)}</div>
         </div>
-        <div class="totals">
-          <div class="total-row"><span>Subtotal</span><strong>${money(documentData.subtotal)}</strong></div>
-          <div class="total-row"><span>Total GST</span><strong>${money(documentData.total_gst)}</strong></div>
-          <div class="total-row grand"><span>Grand Total</span><span>${money(documentData.grand_total)}</span></div>
-        </div>
-      </div>`}
-      <div class="footer">
-        <span>Generated securely by FusionDocs</span>
-        <strong>Authorized Signatory</strong>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <section>
+      <div class="section-title">Products</div>
+      ${documentData.products.map(product => buildProductCard(product, isChallan)).join('')}
+    </section>
+
+    ${isChallan ? '' : buildSummary(documentData)}
+
+    ${isChallan ? '' : `
+    <section class="business-notes">
+      <div class="note-box">
+        <div class="note-title">Bank Details</div>
+        ${multiline(documentData.company.bankDetails)}
+      </div>
+      <div class="note-box">
+        <div class="note-title">Terms & Conditions</div>
+        ${multiline(documentData.company.terms)}
+      </div>
+    </section>`}
+
+    <section class="signature">
+      <div class="signature-box">
+        Authorized Signatory
+        <span>For Fusion Services</span>
+      </div>
+    </section>
+
+    <footer class="footer">Generated securely by FusionDocs</footer>
+  </main>
 </body>
 </html>`;
 };
 
-const buildHtmlRow = (item, index, isChallan) => {
-    const qty = Number(item.qty || 0);
-    const rate = Number(item.unit_price || 0);
-    const gstPercent = Number(item.gst_percent || 0);
-    const subtotal = qty * rate;
-    const gstAmount = Number(item.line_gst_amount || ((subtotal * gstPercent) / 100));
-    const total = Number(item.line_total || (subtotal + gstAmount));
+const buildProductCard = (product, isChallan) => {
+    if (isChallan) {
+        return `<article class="product-card">
+          <div class="product-head">
+            <div class="product-index">Product #${product.index}</div>
+            <div class="product-name">${escapeHtml(product.itemName)}</div>
+          </div>
+          <div class="product-body">
+            <div class="product-grid">
+              ${field('Item Name', product.itemName)}
+              ${field('HSN Code', product.hsnCode)}
+              ${field('Quantity', `${formatQty(product.quantity)} ${product.unit}`)}
+              ${field('Unit', product.unit)}
+              ${field('Remarks', product.remarks)}
+            </div>
+          </div>
+        </article>`;
+    }
 
-    return `<tr>
-      <td>${index + 1}</td>
-      <td class="item">${escapeHtml(item.item_name || '-')}</td>
-      <td>${escapeHtml(item.hsn || '-')}</td>
-      <td>${qty} ${escapeHtml(item.unit || '')}</td>
-      ${isChallan ? '' : `<td class="right">${money(rate)}</td><td class="right">${gstPercent}%</td><td class="right">${money(gstAmount)}</td><td class="right"><strong>${money(total)}</strong></td>`}
-    </tr>`;
+    return `<article class="product-card">
+      <div class="product-head">
+        <div class="product-index">Product #${product.index}</div>
+        <div class="product-name">${escapeHtml(product.itemName)}</div>
+      </div>
+      <div class="product-body">
+        <div class="product-grid">
+          ${field('Item Name', product.itemName)}
+          ${field('HSN Code', product.hsnCode)}
+          ${field('Quantity', `${formatQty(product.quantity)} ${product.unit}`)}
+          ${field('Unit Price', money(product.unitPrice), true)}
+          ${field('GST Rate', `${formatQty(product.gstRate)}%`, true)}
+          ${field('Taxable Amount', money(product.taxableAmount), true)}
+          ${field('GST Amount', money(product.gstAmount), true)}
+          ${field('Line Total', money(product.lineTotal), true, 'line-total')}
+        </div>
+      </div>
+    </article>`;
 };
 
-const buildFallbackPdf = (documentData, companySettings) => {
-    const isChallan = documentData.type === 'challan';
-    const title = getDocTitle(documentData.type);
-    const items = (documentData.items || []).slice(0, 12);
+const field = (label, value, amount = false, extraClass = '') => `
+  <div class="field ${amount ? 'amount' : ''} ${extraClass}">
+    <div class="label">${escapeHtml(label)}</div>
+    <div class="value">${escapeHtml(cleanValue(value))}</div>
+  </div>`;
+
+const buildSummary = (documentData) => `
+  <section class="summary-row">
+    <div class="summary-card">
+      <div class="card-label">Total Summary</div>
+      <div class="total-line"><span>Subtotal</span><strong>${money(documentData.totals.subtotal)}</strong></div>
+      <div class="total-line"><span>Total GST</span><strong>${money(documentData.totals.totalGST)}</strong></div>
+      <div class="total-line grand-total"><span>Grand Total</span><strong>${money(documentData.totals.grandTotal)}</strong></div>
+    </div>
+  </section>`;
+
+const buildFallbackPdf = (documentData) => {
+    const meta = getDocMeta(documentData.documentType);
+    const isChallan = documentData.documentType === 'challan';
     const content = [
-        '0.12 0.16 0.24 RG', '30 30 535 780 re S',
-        '0.12 0.16 0.24 rg',
-        ...pdfText(companySettings.name || 'Fusion Services', 188, 800, 22, true),
-        ...pdfText(companySettings.address || 'Address Not Provided', 118, 778, 9, false, 58),
-        ...pdfText(`GSTIN: ${companySettings.gstin || 'N/A'}`, 230, 762, 9, false),
-        '0.12 0.16 0.24 RG', '30 744 535 0.8 re S',
-        '0.93 0.95 1 rg', '30 706 535 28 re f',
-        '0.12 0.16 0.24 rg', ...pdfText(title.toUpperCase(), 250, 724, 14, true),
-        '0.12 0.16 0.24 RG', '30 706 535 28 re S',
-        '0.99 0.99 1 rg', '42 604 242 82 re f', '0.70 0.75 0.84 RG', '42 604 242 82 re S',
-        '0.12 0.16 0.24 rg', ...pdfText(isChallan ? 'SHIP TO' : 'BILLED TO', 56, 666, 9, true),
-        ...pdfText(documentData.customer_name || '-', 56, 648, 13, true, 34),
-        ...pdfText(isChallan ? (documentData.shipping_address || documentData.billing_address || '-') : (documentData.billing_address || '-'), 56, 630, 9, false, 40),
-        ...pdfText(documentData.phone || '-', 56, 616, 9, false, 40),
-        '0.99 0.99 1 rg', '311 604 242 82 re f', '0.70 0.75 0.84 RG', '311 604 242 82 re S',
-        '0.12 0.16 0.24 rg', ...pdfText('DOCUMENT INFO', 325, 666, 9, true),
-        ...pdfText(`No: ${documentData.document_number || '-'}`, 325, 648, 11, true),
-        ...pdfText(`Date: ${documentData.date || '-'}`, 325, 630, 9, false), ...pdfText('Status: Saved', 325, 616, 9, false),
-        '0.93 0.95 1 rg', '42 558 511 26 re f', '0.12 0.16 0.24 RG', '42 558 511 26 re S',
-        '0.12 0.16 0.24 rg',
-        ...pdfText('ITEM', 52, 575, 8, true), ...pdfText('HSN', 208, 575, 8, true), ...pdfText('QTY', 258, 575, 8, true),
-        ...pdfText('RATE', 310, 575, 8, true), ...pdfText('GST', 370, 575, 8, true), ...pdfText('GST AMT', 418, 575, 8, true), ...pdfText('TOTAL', 498, 575, 8, true),
-        ...fallbackRows(items, isChallan),
-        ...(!isChallan ? fallbackTotals(documentData) : []),
-        '0.12 0.16 0.24 rg', ...pdfText('Bank Details', 42, 136, 10, true), ...pdfText(companySettings.bank_details || 'N/A', 42, 120, 8, false, 52),
-        ...pdfText('Terms', 42, 94, 10, true), ...pdfText(companySettings.terms || 'Payment as per agreed commercial terms.', 42, 78, 8, false, 58),
-        '0.70 0.75 0.84 RG', '42 58 511 0.8 re S', '0.32 0.36 0.45 rg',
-        ...pdfText('Generated securely by FusionDocs', 42, 38, 8, false), ...pdfText('Authorized Signatory', 430, 38, 8, true),
+        '0.10 0.25 0.55 rg',
+        ...pdfText(documentData.company.name, 210, 802, 22, true, 42),
+        '0.27 0.34 0.43 rg',
+        ...pdfText(documentData.company.address, 92, 780, 8, false, 70),
+        ...pdfText(`GSTIN: ${documentData.company.gstin}`, 230, 766, 8, false, 35),
+        '0.15 0.39 0.92 RG', '42 752 511 2 re S',
+        '0.05 0.09 0.16 rg',
+        ...pdfText(meta.title, 230, 728, 15, true, 30),
+        '0.98 0.99 1 rg', '42 620 242 82 re f', '0.72 0.78 0.86 RG', '42 620 242 82 re S',
+        '0.10 0.25 0.55 rg', ...pdfText(isChallan ? 'SHIP TO' : 'BILLED TO', 56, 682, 9, true),
+        '0.05 0.09 0.16 rg', ...pdfText(documentData.customer.name, 56, 662, 12, true, 34),
+        ...pdfText(isChallan ? documentData.customer.shippingAddress : documentData.customer.address, 56, 645, 8, false, 42),
+        ...pdfText(`GSTIN: ${isChallan ? 'N/A' : documentData.customer.gstin}`, 56, 631, 8, false, 38),
+        ...pdfText(`Phone: ${documentData.customer.phone}`, 56, 617, 8, false, 38),
+        '0.98 0.99 1 rg', '311 620 242 82 re f', '0.72 0.78 0.86 RG', '311 620 242 82 re S',
+        '0.10 0.25 0.55 rg', ...pdfText('DOCUMENT DETAILS', 325, 682, 9, true),
+        '0.05 0.09 0.16 rg', ...pdfText(`${meta.numberLabel}: ${documentData.documentNumber}`, 325, 662, 11, true),
+        ...pdfText(`Date: ${documentData.date}`, 325, 645, 8, false),
+        ...fallbackProductCards(documentData.products, isChallan),
+        ...(!isChallan ? fallbackTotals(documentData.totals) : []),
+        '0.45 0.50 0.58 RG', '390 78 150 0.8 re S',
+        '0.05 0.09 0.16 rg', ...pdfText('Authorized Signatory', 414, 62, 9, true),
+        ...pdfText('For Fusion Services', 426, 48, 8, false),
+        '0.40 0.45 0.52 rg', ...pdfText('Generated securely by FusionDocs', 218, 28, 8, false)
     ].join('\n');
+
     return writePdf(content);
 };
 
-const fallbackRows = (items, isChallan) => {
+const fallbackProductCards = (products, isChallan) => {
     const commands = [];
-    let y = 545;
-    items.forEach((item, index) => {
-        const qty = Number(item.qty || 0);
-        const rate = Number(item.unit_price || 0);
-        const gstPercent = Number(item.gst_percent || 0);
-        const subtotal = qty * rate;
-        const gstAmount = Number(item.line_gst_amount || ((subtotal * gstPercent) / 100));
-        const total = Number(item.line_total || (subtotal + gstAmount));
-        if (index % 2 === 0) commands.push('0.985 0.988 1 rg', `38 ${y - 16} 519 30 re f`);
+    let y = 582;
+    products.slice(0, 7).forEach((product) => {
         commands.push(
-            '0.14 0.16 0.26 rg',
-            ...pdfText(truncate(item.item_name || '-', 27), 48, y, 8.5, true),
-            ...pdfText(item.hsn || '-', 210, y, 8, false),
-            ...pdfText(`${qty} ${item.unit || ''}`.trim(), 260, y, 8, false),
-            ...pdfText(isChallan ? '-' : money(rate), 313, y, 8, false),
-            ...pdfText(isChallan ? '-' : `${gstPercent}%`, 372, y, 8, false),
-            ...pdfText(isChallan ? '-' : money(gstAmount), 420, y, 8, false),
-            ...pdfText(isChallan ? '-' : money(total), 500, y, 8, true)
+            '0.99 0.99 1 rg', `42 ${y - 72} 511 72 re f`,
+            '0.72 0.78 0.86 RG', `42 ${y - 72} 511 72 re S`,
+            '0.95 0.97 1 rg', `42 ${y - 22} 511 22 re f`,
+            '0.10 0.25 0.55 rg', ...pdfText(`Product #${product.index}`, 54, y - 8, 8, true),
+            '0.05 0.09 0.16 rg', ...pdfText(product.itemName, 132, y - 8, 9, true, 56),
+            ...pdfText(`HSN Code: ${product.hsnCode}`, 54, y - 36, 8, false),
+            ...pdfText(`Quantity: ${formatQty(product.quantity)} ${product.unit}`, 54, y - 52, 8, false)
         );
-        y -= 32;
+
+        if (isChallan) {
+            commands.push(...pdfText(`Remarks: ${product.remarks}`, 270, y - 36, 8, false, 36));
+        } else {
+            commands.push(
+                ...pdfText(`Unit Price: ${money(product.unitPrice)}`, 270, y - 36, 8, false, 36),
+                ...pdfText(`GST Rate: ${formatQty(product.gstRate)}%`, 270, y - 52, 8, false, 28),
+                ...pdfText(`Taxable: ${money(product.taxableAmount)}`, 392, y - 36, 8, false, 30),
+                ...pdfText(`Line Total: ${money(product.lineTotal)}`, 392, y - 52, 8, true, 30)
+            );
+        }
+        y -= 84;
     });
     return commands;
 };
 
-const fallbackTotals = (documentData) => ([
-    '0.10 0.12 0.28 rg', '340 164 217 98 re f', '1 1 1 rg',
-    ...pdfText('Subtotal', 360, 235, 9, false), ...pdfText(money(documentData.subtotal), 475, 235, 9, true),
-    ...pdfText('Total GST', 360, 213, 9, false), ...pdfText(money(documentData.total_gst), 475, 213, 9, true),
-    '1.00 0.68 0.32 rg', ...pdfText('Grand Total', 360, 186, 12, true), ...pdfText(money(documentData.grand_total), 467, 186, 13, true),
+const fallbackTotals = (totals) => ([
+    '0.96 0.98 1 rg', '332 110 221 82 re f', '0.72 0.78 0.86 RG', '332 110 221 82 re S',
+    '0.05 0.09 0.16 rg',
+    ...pdfText('Subtotal', 350, 170, 8, false), ...pdfText(money(totals.subtotal), 452, 170, 8, true),
+    ...pdfText('Total GST', 350, 150, 8, false), ...pdfText(money(totals.totalGST), 452, 150, 8, true),
+    '0.10 0.25 0.55 rg',
+    ...pdfText('Grand Total', 350, 126, 10, true), ...pdfText(money(totals.grandTotal), 440, 126, 10, true),
 ]);
 
-const getDocTitle = (type) => type === 'invoice' ? 'Tax Invoice' : type === 'quote' ? 'Quotation' : 'Delivery Challan';
-const money = (value) => `Rs. ${Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const sampleDocumentData = {
+    company: {
+        name: 'Fusion Services',
+        address: 'Plot No. 24, Industrial Area, Hyderabad, Telangana',
+        gstin: '36ABCDE1234F1Z5',
+        bankDetails: 'Bank: HDFC Bank\nA/C No: 1234567890\nIFSC: HDFC0001234',
+        terms: 'Payment due as per agreed terms. Goods once sold will not be returned.'
+    },
+    customer: {
+        name: 'ABC Manufacturing Pvt Ltd',
+        address: 'Sector 12, Balanagar, Hyderabad',
+        gstin: '36AABCA1234A1Z1',
+        phone: '9876543210'
+    },
+    documentType: 'quotation',
+    documentNumber: 'QT-SAMPLE-001',
+    date: '2026-06-27',
+    products: [
+        { itemName: 'Industrial Bearing Set', hsnCode: '8482', quantity: 2, unit: 'Nos', unitPrice: 1000, gstRate: 5 },
+        { itemName: 'Safety Control Cable', hsnCode: '8544', quantity: 5, unit: 'Roll', unitPrice: 750, gstRate: 12 },
+        { itemName: 'Automation Panel Assembly', hsnCode: '8537', quantity: 1, unit: 'Nos', unitPrice: 18500, gstRate: 18 }
+    ]
+};
+
+const getDocMeta = (type) => {
+    if (type === 'invoice') return { title: 'TAX INVOICE', numberLabel: 'Invoice No' };
+    if (type === 'challan') return { title: 'DELIVERY CHALLAN', numberLabel: 'Challan No' };
+    return { title: 'QUOTATION', numberLabel: 'Quote No' };
+};
+
+const normalizeDocumentType = (type = 'quote') => {
+    const value = String(type).trim().toLowerCase().replace(/\s+/g, '_');
+    if (['invoice', 'tax_invoice', 'taxinvoice'].includes(value)) return 'invoice';
+    if (['challan', 'delivery_challan', 'deliverychallan'].includes(value)) return 'challan';
+    return 'quote';
+};
+
+const normalizeGstRate = (value, isChallan) => {
+    if (isChallan && (value === undefined || value === null || value === '')) return 0;
+    const parsed = Number(String(value ?? '').replace('%', ''));
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : 18;
+};
+
+const pickNumber = (...values) => {
+    for (const value of values) {
+        const parsed = Number(value);
+        if (Number.isFinite(parsed)) return round2(parsed);
+    }
+    return 0;
+};
+
+const toNumber = (value, fallback = 0) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const round2 = (value) => Number((Number(value || 0)).toFixed(2));
+const cleanValue = (value) => String(value ?? '').trim() || '-';
+const formatQty = (value) => Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+const money = (value) => `₹${Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const safeFileName = (value) => String(value).replace(/[^a-z0-9_.-]/gi, '_');
 const truncate = (value, maxLength) => String(value || '').length > maxLength ? `${String(value).slice(0, maxLength - 3)}...` : String(value || '');
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+const multiline = (value) => escapeHtml(cleanValue(value)).replace(/\n/g, '<br>');
 const escapePdfText = (value) => String(value ?? '').replace(/[^\x20-\x7E]/g, ' ').replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
 
 const pdfText = (value, x, y, size = 10, bold = false, maxLength = 68) => {
@@ -256,4 +462,4 @@ const writePdf = (content) => {
     return Buffer.from(pdf, 'utf8');
 };
 
-module.exports = { generatePDF };
+module.exports = { generatePDF, sampleDocumentData, normalizeDocumentData };
