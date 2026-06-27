@@ -235,7 +235,7 @@ const Home = () => {
                         
                         <div className="hero-image-card hover-tilt" data-tilt>
                             <div className="glowing-border-overlay"></div>
-                            <img src="assets/hero_factory.png" alt="Advanced High-Tech Manufacturing Facility" />
+                            <img src="/assets/hero_factory.png" alt="Advanced High-Tech Manufacturing Facility" />
                             <div className="hero-image-overlay"></div>
                             <div className="hero-visual-badge">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="spin-slow"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
@@ -410,7 +410,7 @@ const Home = () => {
                     </div>
                     <div className="overview-visual scroll-reveal slide-in-right">
                         <div className="image-wrapper hover-zoom-img">
-                            <img src="assets/heavy_machinery.png" alt="Advanced industrial machinery in operation" />
+                            <img src="/assets/heavy_machinery.png" alt="Advanced industrial machinery in operation" />
                             <div className="floating-badge pulse-badge">
                                 <span className="badge-num">10+</span>
                                 <span className="badge-txt">Years of Excellence</span>
@@ -934,7 +934,7 @@ const Home = () => {
                 <div className="container">
                     <div className="grid grid-2 service-block">
                         <div className="service-image-wrapper hover-zoom-img scroll-reveal slide-in-left">
-                            <img src="assets/heavy_machinery.png" alt="Industrial Manufacturing floor" />
+                            <img src="/assets/heavy_machinery.png" alt="Industrial Manufacturing floor" />
                         </div>
                         <div className="service-info-wrapper scroll-reveal slide-in-right">
                             <span className="service-number">01</span>
@@ -955,7 +955,7 @@ const Home = () => {
 
                     <div className="grid grid-2 service-block reverse">
                         <div className="service-image-wrapper hover-zoom-img scroll-reveal slide-in-right">
-                            <img src="assets/precision_part.png" alt="Precision machined steel component" />
+                            <img src="/assets/precision_part.png" alt="Precision machined steel component" />
                         </div>
                         <div className="service-info-wrapper scroll-reveal slide-in-left">
                             <span className="service-number">02</span>
@@ -1049,21 +1049,21 @@ const Home = () => {
                     </div>
                     <div className="grid grid-3 gallery-grid">
                         <div className="gallery-item card hover-tilt scroll-reveal zoom-in" data-tilt>
-                            <img src="assets/hero_factory.png" alt="Smart assembly automation line" />
+                            <img src="/assets/hero_factory.png" alt="Smart assembly automation line" />
                             <div className="gallery-overlay">
                                 <h5>Smart Assembly Cell</h5>
                                 <p>Automated manufacturing systems in action</p>
                             </div>
                         </div>
                         <div className="gallery-item card hover-tilt scroll-reveal zoom-in" data-tilt style={{"animationDelay":"0.1s"}}>
-                            <img src="assets/precision_part.png" alt="Precision CNC parts audit" />
+                            <img src="/assets/precision_part.png" alt="Precision CNC parts audit" />
                             <div className="gallery-overlay">
                                 <h5>CMM Inspection Lab</h5>
                                 <p>Verifying micron-scale accuracy of metal parts</p>
                             </div>
                         </div>
                         <div className="gallery-item card hover-tilt scroll-reveal zoom-in" data-tilt style={{"animationDelay":"0.2s"}}>
-                            <img src="assets/heavy_machinery.png" alt="Metal fabrication cutting cell" />
+                            <img src="/assets/heavy_machinery.png" alt="Metal fabrication cutting cell" />
                             <div className="gallery-overlay">
                                 <h5>High-Speed Metal Fabricator</h5>
                                 <p>Processing aerospace grade alloys</p>
@@ -1092,7 +1092,7 @@ const Home = () => {
                     
                     <div className="project-block card grid grid-2 scroll-reveal zoom-in">
                         <div className="project-image hover-zoom-img">
-                            <img src="assets/automotive_assembly.png" alt="Automotive robotic welding assembly line" />
+                            <img src="/assets/automotive_assembly.png" alt="Automotive robotic welding assembly line" />
                         </div>
                         <div className="project-details">
                             <span className="badge badge-accent animated-badge">Case Study: Automotive</span>
@@ -1118,7 +1118,7 @@ const Home = () => {
                     
                     <div className="project-block card grid grid-2 reverse scroll-reveal zoom-in">
                         <div className="project-image hover-zoom-img">
-                            <img src="assets/heavy_machinery.png" alt="Laser cutter fabrication process" />
+                            <img src="/assets/heavy_machinery.png" alt="Laser cutter fabrication process" />
                         </div>
                         <div className="project-details">
                             <span className="badge badge-accent animated-badge">Case Study: Energy</span>
@@ -1144,7 +1144,7 @@ const Home = () => {
                     
                     <div className="project-block card grid grid-2 scroll-reveal zoom-in">
                         <div className="project-image hover-zoom-img">
-                            <img src="assets/precision_part.png" alt="Precision CNC milled component" />
+                            <img src="/assets/precision_part.png" alt="Precision CNC milled component" />
                         </div>
                         <div className="project-details">
                             <span className="badge badge-accent animated-badge">Case Study: Aerospace</span>
@@ -1170,7 +1170,7 @@ const Home = () => {
                     
                     <div className="project-block card grid grid-2 reverse scroll-reveal zoom-in">
                         <div className="project-image hover-zoom-img">
-                            <img src="assets/hero_factory.png" alt="Industrial robotic fabrication cell" />
+                            <img src="/assets/hero_factory.png" alt="Industrial robotic fabrication cell" />
                         </div>
                         <div className="project-details">
                             <span className="badge badge-accent animated-badge">Case Study: Infrastructure</span>
