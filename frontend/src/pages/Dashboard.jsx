@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { FileText, FileBadge, Truck, ArrowRight, TrendingUp, FilePlus, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { API_URL } from '../config/api';
 
 const StatCard = ({ title, value, icon: Icon, colorClass, bgClass, trend }) => (
   <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white flex items-center justify-between transition-all hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] duration-300">
@@ -23,7 +24,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/dashboard`, {
+        const response = await fetch(`${API_URL}/dashboard`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {

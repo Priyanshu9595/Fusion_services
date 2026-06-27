@@ -59,7 +59,8 @@ const generateShareLink = async (req, res) => {
         }
 
         const token = jwt.sign({ docId }, process.env.JWT_SECRET || 'fallback_secret_key', { expiresIn: '7d' });
-        const link = `http://localhost:5000/api/documents/public/pdf?token=${token}`;
+        const apiBaseUrl = process.env.API_BASE_URL || `${req.protocol}://${req.get('host')}/api`;
+        const link = `${apiBaseUrl}/documents/public/pdf?token=${token}`;
         res.json({ link });
     } catch (err) {
         res.status(500).json({ error: 'Server error' });

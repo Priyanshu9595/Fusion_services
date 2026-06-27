@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { FileText, Lock, User } from 'lucide-react';
+import { API_URL } from '../config/api';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -27,7 +28,7 @@ const Login = () => {
     const requestTimeoutId = setTimeout(() => controller.abort(), 70000);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/login`, {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: normalizedUsername, password }),

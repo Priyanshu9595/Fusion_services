@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FileText, Lock, User, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../config/api';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -35,7 +36,7 @@ const Register = () => {
     const requestTimeoutId = setTimeout(() => controller.abort(), 70000);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/register`, {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: normalizedUsername, password }),
@@ -46,7 +47,7 @@ const Register = () => {
       
       if (response.ok) {
         // Auto login
-        const loginResponse = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/login`, {
+        const loginResponse = await fetch(`${API_URL}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: normalizedUsername, password }),

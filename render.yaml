@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: fusion-backend
+    name: fusion-services-ohci
     runtime: node
     rootDir: backend
     buildCommand: npm install
@@ -13,6 +13,10 @@ services:
         sync: false
       - key: JWT_SECRET
         generateValue: true
+      - key: API_BASE_URL
+        value: https://fusion-services-ohci.onrender.com/api
+      - key: FRONTEND_URL
+        value: https://fusion-services-1.onrender.com
 
   - type: static
     name: fusion-services-1
@@ -21,7 +25,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: https://fusion-backend.onrender.com/api
+        value: https://fusion-services-ohci.onrender.com/api
     routes:
       - type: rewrite
         source: /*

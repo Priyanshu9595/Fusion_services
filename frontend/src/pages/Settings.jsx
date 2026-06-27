@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Save, Building2 } from 'lucide-react';
+import { API_URL } from '../config/api';
 
 const Settings = () => {
   const { token } = useAuth();
@@ -12,7 +13,7 @@ const Settings = () => {
   });
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/settings`, {
+    fetch(`${API_URL}/settings`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -27,7 +28,7 @@ const Settings = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/settings`, {
+      const response = await fetch(`${API_URL}/settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

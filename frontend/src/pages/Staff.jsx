@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Users, Shield, UserX, UserCheck, Plus } from 'lucide-react';
+import { API_URL } from '../config/api';
 
 const Staff = () => {
   const { token, user } = useAuth();
@@ -9,7 +10,7 @@ const Staff = () => {
 
   const fetchStaff = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/users`, {
+      const response = await fetch(`${API_URL}/users`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -28,7 +29,7 @@ const Staff = () => {
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to remove this staff member?')) return;
     try {
-      await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/users/${id}`, {
+      await fetch(`${API_URL}/users/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

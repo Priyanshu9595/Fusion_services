@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Plus, Search, Edit2, Trash2, Users, Mail, Phone, FileDigit } from 'lucide-react';
+import { API_URL } from '../config/api';
 
 const Customers = () => {
   const { token } = useAuth();
@@ -18,7 +19,7 @@ const Customers = () => {
   const fetchCustomers = async () => {
     setLoading(true);
     try {
-      const url = search ? `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers?search=${search}` : `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers`;
+      const url = search ? `${API_URL}/customers?search=${search}` : `${API_URL}/customers`;
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -59,8 +60,8 @@ const Customers = () => {
     e.preventDefault();
     try {
       const url = editingId 
-        ? `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers/${editingId}`
-        : `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers`;
+        ? `${API_URL}/customers/${editingId}`
+        : `${API_URL}/customers`;
       
       const method = editingId ? 'PUT' : 'POST';
 
@@ -87,7 +88,7 @@ const Customers = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this customer?')) {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers/${id}`, {
+        const response = await fetch(`${API_URL}/customers/${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });

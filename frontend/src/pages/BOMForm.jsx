@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Plus, Trash2, Save, FileText, IndianRupee, Percent, Hash, UploadCloud, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
+import { API_URL } from '../config/api';
 
 const BOMForm = () => {
   const { token } = useAuth();
@@ -25,7 +26,7 @@ const BOMForm = () => {
 
   // Fetch customers for dropdown
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers`, {
+    fetch(`${API_URL}/customers`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -70,7 +71,7 @@ const BOMForm = () => {
 
     setAiLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents/parse`, {
+      const response = await fetch(`${API_URL}/documents/parse`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -165,7 +166,7 @@ const BOMForm = () => {
         finalCustomerId = existingCustomer.id;
       } else {
         // Create new customer
-        const createRes = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers`, {
+        const createRes = await fetch(`${API_URL}/customers`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
           body: JSON.stringify({ name: customerName.trim(), phone: customerPhone.trim(), billing_address: '', shipping_address: '', gstin: '', email: '' })
@@ -175,7 +176,7 @@ const BOMForm = () => {
         finalCustomerId = newCust.id;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents`, {
+      const response = await fetch(`${API_URL}/documents`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

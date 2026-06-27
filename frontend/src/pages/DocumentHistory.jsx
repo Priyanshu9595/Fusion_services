@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Search, Download, Eye, FileText, Filter } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { API_URL } from '../config/api';
 
 const DocumentHistory = () => {
   const { token, user } = useAuth();
@@ -17,7 +18,7 @@ const DocumentHistory = () => {
       if (search) query.append('search', search);
       if (typeFilter) query.append('type', typeFilter);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents?${query.toString()}`, {
+      const response = await fetch(`${API_URL}/documents?${query.toString()}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -41,7 +42,7 @@ const DocumentHistory = () => {
 
   const handleDownloadPDF = async (docId, docNumber) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents/${docId}/pdf`, {
+      const response = await fetch(`${API_URL}/documents/${docId}/pdf`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Download, Send, Phone } from 'lucide-react';
+import { API_URL } from '../config/api';
 
 const DocumentView = () => {
   const { id } = useParams();
@@ -12,7 +13,7 @@ const DocumentView = () => {
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents/${id}`, {
+    fetch(`${API_URL}/documents/${id}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -24,7 +25,7 @@ const DocumentView = () => {
   const handleDownloadPDF = async () => {
     setDownloading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents/${id}/pdf`, {
+      const response = await fetch(`${API_URL}/documents/${id}/pdf`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -47,7 +48,7 @@ const DocumentView = () => {
   const handleWhatsAppShare = async () => {
     try {
       // Get the shareable public link from the backend
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents/${id}/share`, {
+      const response = await fetch(`${API_URL}/documents/${id}/share`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
