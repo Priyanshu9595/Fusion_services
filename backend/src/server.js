@@ -6,6 +6,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+    res.json({
+        status: 'OK',
+        message: 'FusionDocs backend is running.',
+        health: '/api/health',
+        frontend: process.env.FRONTEND_URL || 'https://fusion-services-1.onrender.com'
+    });
+});
+
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'FusionDocs API is running.' });
 });
