@@ -1,7 +1,11 @@
 const db = require('../database');
-const { generatePDF } = require('../utils/pdfGenerator');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+
+const generateDocumentPDF = async (document, companySettings) => {
+    const { generatePDF } = require('../utils/pdfGenerator');
+    return generatePDF(document, companySettings);
+};
 
 const downloadDocumentPDF = async (req, res) => {
     const docId = req.params.id;
@@ -24,7 +28,7 @@ const downloadDocumentPDF = async (req, res) => {
         const companySettings = settingsResult.rows[0] || {};
 
         // 4. Generate PDF
-        const pdfPath = await generatePDF(document, companySettings);
+        const pdfPath = await generateDocumentPDF(document, companySettings);
         
         // 5. Send file and then delete it
         res.download(pdfPath, `${document.document_number}.pdf`, (err) => {
@@ -84,7 +88,7 @@ const getPublicDocumentPDF = async (req, res) => {
         const settingsResult = await db.query('SELECT * FROM CompanySettings ORDER BY id DESC LIMIT 1');
         const companySettings = settingsResult.rows[0] || {};
 
-        const pdfPath = await generatePDF(document, companySettings);
+        const pdfPath = await generateDocumentPDF(document, companySettings);
         
         res.download(pdfPath, `${document.document_number}.pdf`, (err) => {
             if (err) console.error('Error downloading file', err);

@@ -1,6 +1,3 @@
-const Groq = require('groq-sdk');
-const pdfParse = require('pdf-parse');
-
 exports.parseDocument = async (req, res) => {
     try {
         if (!req.file) {
@@ -19,8 +16,6 @@ exports.parseDocument = async (req, res) => {
         if (!mimeType.startsWith('image/') && mimeType !== 'application/pdf') {
              return res.status(400).json({ error: 'Invalid file type. Only images and PDFs are supported.' });
         }
-
-        const groq = new Groq({ apiKey });
 
         const prompt = `
             Analyze this document (which is a quote, invoice, or bill of materials).
@@ -49,12 +44,16 @@ exports.parseDocument = async (req, res) => {
         let extractedPdfText = "";
         if (mimeType === 'application/pdf') {
             try {
+                const pdfParse = require('pdf-parse');
                 const pdfData = await pdfParse(buffer);
                 extractedPdfText = pdfData.text;
             } catch (e) {
                 return res.status(500).json({ error: 'Failed to extract text from PDF: ' + e.message });
             }
         }
+
+        const Groq = require('groq-sdk');
+        const groq = new Groq({ apiKey });
 
         while (attempt < maxRetries) {
             try {
