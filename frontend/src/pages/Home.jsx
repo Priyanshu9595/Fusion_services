@@ -400,7 +400,7 @@ const Home = () => {
 
             
             <section className="home-overview section-padding">
-                <div className="container grid grid-2">
+                <div className="container grid grid-2" style={{"maxWidth": "900px", "margin": "0 auto", "alignItems": "center"}}>
                     <div className="overview-text scroll-reveal slide-in-left">
                         <span className="section-subtitle">Who We Are</span>
                         <h2>Pioneering the Future of Industrial Manufacturing</h2>
@@ -410,7 +410,7 @@ const Home = () => {
                     </div>
                     <div className="overview-visual scroll-reveal slide-in-right">
                         <div className="image-wrapper hover-zoom-img">
-                            <img src="/assets/heavy_machinery.png" alt="Advanced industrial machinery in operation" />
+                            <img src="/assets/heavy_machinery.png" alt="Advanced industrial machinery in operation" style={{"maxHeight": "400px", "width": "100%", "objectFit": "cover"}} />
                             <div className="floating-badge pulse-badge">
                                 <span className="badge-num">10+</span>
                                 <span className="badge-txt">Years of Excellence</span>
