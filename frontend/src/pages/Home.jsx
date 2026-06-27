@@ -1314,21 +1314,21 @@ const Home = () => {
                                 <svg className="info-svg pulse-effect" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                                 <div>
                                     <h5>Address</h5>
-                                    <p>8400 Industrial Parkway, Suite A<br />Steel Valley Research Park, SV 45892</p>
+                                    <p>J-5, Park Street,<br />Mayur Vihar –II, Delhi -110091</p>
                                 </div>
                             </div>
                             <div className="info-item">
                                 <svg className="info-svg pulse-effect" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                                 <div>
                                     <h5>Phone & Support</h5>
-                                    <p>Office: +1 (555) 349-2049<br />Engineering RFQ Line: +1 (555) 349-2051</p>
+                                    <p>Call: 011- 49851127<br />Mobile: +91 9289421832</p>
                                 </div>
                             </div>
                             <div className="info-item">
                                 <svg className="info-svg pulse-effect" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                                 <div>
                                     <h5>Email Coordinates</h5>
-                                    <p>General RFQs: contracts@fusionservices.com<br />Support: logistics@fusionservices.com</p>
+                                    <p>Email: info@fusionservices.co.in<br />Support: info@fusionservices.co.in</p>
                                 </div>
                             </div>
                             <div className="info-item">
@@ -1427,9 +1427,9 @@ const Home = () => {
 
             <div className="footer-contact-column">
                 <h4>Contact Details</h4>
-                <p><strong>Address:</strong> 8400 Industrial Parkway, Suite A, Steel Valley, SV 45892</p>
-                <p><strong>Inquiry Line:</strong> +1 (555) 349-2049</p>
-                <p><strong>General Mail:</strong> contracts@fusionservices.com</p>
+                <p><strong>Address:</strong> J-5, Park Street, Mayur Vihar –II, Delhi -110091</p>
+                <p><strong>Inquiry Line:</strong> 011- 49851127 / +91 9289421832</p>
+                <p><strong>General Mail:</strong> info@fusionservices.co.in</p>
                 <p><strong>Core Hours:</strong> Mon - Fri, 8:00 AM - 6:00 PM</p>
             </div>
         </div>
@@ -1448,7 +1448,17 @@ const Home = () => {
 
     
     
-
+    <a 
+      href="https://wa.me/919289421832" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="fixed bottom-6 right-6 bg-green-500 text-white rounded-full p-3 shadow-lg hover:bg-green-600 hover:scale-110 transition-all z-50 flex items-center justify-center group"
+      aria-label="Chat on WhatsApp"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-whatsapp" viewBox="0 0 16 16">
+        <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+      </svg>
+    </a>
     </div>
   );
 };
