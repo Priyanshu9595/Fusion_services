@@ -5,9 +5,6 @@ exports.parseDocument = async (req, res) => {
         }
 
         const apiKey = process.env.GROQ_API_KEY;
-        if (!apiKey) {
-             return res.status(500).json({ error: 'Groq API key is not configured on the server' });
-        }
 
         const mimeType = req.file.mimetype;
         const buffer = req.file.buffer;
@@ -30,11 +27,17 @@ exports.parseDocument = async (req, res) => {
             - hsn (string, HSN/SAC code if available, otherwise empty string)
             - qty (number, quantity)
             - unit (string, e.g. Nos, kg, Ltr, usually Nos)
-            - unit_price (number, unit price or rate)
-            - gst_percent (number, GST percentage e.g. 18, 5, 12, 28, or 0. Default to 18 if not found).
+            - unit_price (number, unit price or rate before GST)
+            - gst_percent (number, use only one of 5, 12, 18, 28. Default to 18 if GST is missing, blank, zero, unclear, or unreadable.)
+            - line_total (number, final line amount including GST if visible; otherwise calculate qty * unit_price + GST)
+
+            Important:
+            - Do not use 0 for GST unless the document explicitly says GST exempt. For normal products, missing GST means 18.
+            - If OCR reads weird GST like 1.5, 1.8, 8, or blank, treat it as 18.
+            - Preserve full product names. Do not merge multiple products into one row.
             
             Return the result STRICTLY as a single JSON object. Do not include any markdown formatting like \`\`\`json. Just the raw JSON object.
-            Example: {"customer_name": "Priyanshu Raj", "date": "2026-06-27", "items": [{"item_name":"Widget A","hsn":"8471","qty":10,"unit":"Nos","unit_price":1500,"gst_percent":18}]}
+            Example: {"customer_name": "Priyanshu Raj", "date": "2026-06-27", "items": [{"item_name":"Widget A","hsn":"8471","qty":10,"unit":"Nos","unit_price":1500,"gst_percent":18,"line_total":17700}]}
         `;
 
         let responseText = "";
@@ -50,6 +53,19 @@ exports.parseDocument = async (req, res) => {
             } catch (e) {
                 return res.status(500).json({ error: 'Failed to extract text from PDF: ' + e.message });
             }
+        }
+
+        const fallbackItems = mimeType === 'application/pdf' ? extractItemsFromText(extractedPdfText) : [];
+        const fallbackPayload = {
+            customer_name: inferCustomerName(extractedPdfText),
+            customer_phone: inferPhone(extractedPdfText),
+            date: inferDate(extractedPdfText),
+            items: normalizeParsedItems(fallbackItems)
+        };
+
+        if (!apiKey) {
+            if (fallbackPayload.items.length) return res.json(fallbackPayload);
+            return res.status(500).json({ error: 'Groq API key is not configured on the server' });
         }
 
         const Groq = require('groq-sdk');
@@ -99,6 +115,7 @@ exports.parseDocument = async (req, res) => {
                 attempt++;
                 console.error(`Groq Attempt ${attempt} failed:`, apiError.message);
                 if (attempt >= maxRetries) {
+                    if (fallbackPayload.items.length) return res.json(fallbackPayload);
                     throw new Error(`Groq AI is temporarily overloaded after ${maxRetries} tries. Original Error: ${apiError.message}`);
                 }
                 await new Promise(res => setTimeout(res, 2000));
@@ -118,13 +135,10 @@ exports.parseDocument = async (req, res) => {
 
         const parsedData = JSON.parse(jsonStr);
 
-        // Enforce defaults in code just in case AI missed it
-        if (parsedData.items && Array.isArray(parsedData.items)) {
-            parsedData.items = parsedData.items.map(item => ({
-                ...item,
-                gst_percent: normalizeParsedGst(item.gst_percent)
-            }));
-        }
+        parsedData.customer_name = parsedData.customer_name || fallbackPayload.customer_name;
+        parsedData.customer_phone = parsedData.customer_phone || fallbackPayload.customer_phone;
+        parsedData.date = parsedData.date || fallbackPayload.date;
+        parsedData.items = normalizeParsedItems(parsedData.items, fallbackItems);
 
         res.json(parsedData);
     } catch (error) {
@@ -135,6 +149,111 @@ exports.parseDocument = async (req, res) => {
 
 const normalizeParsedGst = (value) => {
     const parsed = Number(value);
+    const allowedRates = [5, 12, 18, 28];
     if (!Number.isFinite(parsed) || parsed <= 0) return 18;
+    if (!allowedRates.includes(parsed)) return 18;
     return parsed;
+};
+
+const normalizeParsedItems = (aiItems, fallbackItems = []) => {
+    const sourceItems = Array.isArray(aiItems) && aiItems.length ? aiItems : fallbackItems;
+    return sourceItems
+        .map((item) => normalizeParsedItem(item))
+        .filter((item) => item.item_name && item.qty > 0);
+};
+
+const normalizeParsedItem = (item = {}) => {
+    const qty = positiveNumber(item.qty, 1);
+    const gstPercent = normalizeParsedGst(item.gst_percent);
+    let unitPrice = positiveNumber(item.unit_price, 0);
+    const providedTotal = positiveNumber(item.line_total || item.total || item.amount, 0);
+
+    if (!unitPrice && providedTotal) {
+        unitPrice = Number((providedTotal / (1 + gstPercent / 100) / qty).toFixed(2));
+    }
+
+    const lineSubtotal = Number((qty * unitPrice).toFixed(2));
+    const lineGstAmount = Number(((lineSubtotal * gstPercent) / 100).toFixed(2));
+    const calculatedTotal = Number((lineSubtotal + lineGstAmount).toFixed(2));
+
+    return {
+        item_name: cleanText(item.item_name || item.name || item.description || ''),
+        hsn: cleanText(item.hsn || item.hsn_code || ''),
+        qty,
+        unit: cleanText(item.unit || 'Nos') || 'Nos',
+        unit_price: unitPrice,
+        gst_percent: gstPercent,
+        line_subtotal: lineSubtotal,
+        line_gst_amount: lineGstAmount,
+        line_total: calculatedTotal
+    };
+};
+
+const extractItemsFromText = (text = '') => {
+    const lines = text
+        .split(/\r?\n/)
+        .map((line) => line.replace(/\s+/g, ' ').trim())
+        .filter(Boolean);
+
+    return lines.map((line) => {
+        const numbers = [...line.matchAll(/(?:₹|rs\.?\s*)?(\d+(?:,\d{2,3})*(?:\.\d+)?)/gi)]
+            .map((match) => Number(match[1].replace(/,/g, '')))
+            .filter(Number.isFinite);
+
+        if (numbers.length < 2 || !/[a-zA-Z]/.test(line)) return null;
+
+        const qty = numbers[0] || 1;
+        const unitPrice = numbers.length >= 3 ? numbers[numbers.length - 2] : numbers[numbers.length - 1];
+        const lineTotal = numbers[numbers.length - 1];
+        const name = line
+            .replace(/(?:₹|rs\.?\s*)?\d+(?:,\d{2,3})*(?:\.\d+)?/gi, ' ')
+            .replace(/\b(nos|pcs|kg|ltr|unit|qty|rate|amount|total|gst|hsn)\b/gi, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        if (!name || unitPrice <= 0) return null;
+
+        return {
+            item_name: name,
+            qty,
+            unit: /\bkg\b/i.test(line) ? 'Kg' : 'Nos',
+            unit_price: unitPrice,
+            gst_percent: 18,
+            line_total: lineTotal
+        };
+    }).filter(Boolean);
+};
+
+const positiveNumber = (value, fallback = 0) => {
+    const parsed = Number(String(value ?? '').replace(/,/g, ''));
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
+
+const cleanText = (value) => String(value ?? '').replace(/\s+/g, ' ').trim();
+
+const inferPhone = (text = '') => {
+    const match = text.match(/(?:\+91[\s-]?)?[6-9]\d{9}\b/);
+    return match ? match[0].replace(/\s+/g, '') : '';
+};
+
+const inferDate = (text = '') => {
+    const iso = text.match(/\b(20\d{2})[-/](\d{1,2})[-/](\d{1,2})\b/);
+    if (iso) return `${iso[1]}-${String(iso[2]).padStart(2, '0')}-${String(iso[3]).padStart(2, '0')}`;
+
+    const indian = text.match(/\b(\d{1,2})[-/](\d{1,2})[-/](20\d{2})\b/);
+    if (indian) return `${indian[3]}-${String(indian[2]).padStart(2, '0')}-${String(indian[1]).padStart(2, '0')}`;
+
+    return '';
+};
+
+const inferCustomerName = (text = '') => {
+    const lines = text.split(/\r?\n/).map(cleanText).filter(Boolean);
+    const labelIndex = lines.findIndex((line) => /(billed to|bill to|invoice to|customer|sold to|name)/i.test(line));
+    if (labelIndex !== -1) {
+        const sameLine = lines[labelIndex].split(/:|-/).slice(1).join(' ').trim();
+        if (sameLine && /[a-z]/i.test(sameLine)) return sameLine;
+        const nextLine = lines[labelIndex + 1];
+        if (nextLine && /[a-z]/i.test(nextLine) && !/\d{4,}/.test(nextLine)) return nextLine;
+    }
+    return '';
 };

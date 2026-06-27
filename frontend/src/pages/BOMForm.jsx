@@ -7,7 +7,9 @@ import { API_URL } from '../config/api';
 
 const normalizeGstPercent = (value) => {
   const parsed = Number(value);
+  const allowedRates = [5, 12, 18, 28];
   if (!Number.isFinite(parsed) || parsed <= 0) return 18;
+  if (!allowedRates.includes(parsed)) return 18;
   return parsed;
 };
 
@@ -106,7 +108,9 @@ const BOMForm = () => {
             qty: item.qty || 1,
             unit: item.unit || 'Nos',
             unit_price: item.unit_price || 0,
-            gst_percent: normalizeGstPercent(item.gst_percent)
+            gst_percent: normalizeGstPercent(item.gst_percent),
+            line_gst_amount: item.line_gst_amount || 0,
+            line_total: item.line_total || 0
           }));
           // If there's only one empty item initially, replace it. Otherwise append.
           if (items.length === 1 && !items[0].item_name && !items[0].unit_price) {
@@ -345,7 +349,7 @@ const BOMForm = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[1000px]">
+            <table className="w-full text-left border-collapse min-w-[1120px]">
               <thead>
                 <tr className="bg-slate-50 border-y border-slate-200">
                   <th className="px-4 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[300px]">Item Name</th>
@@ -354,6 +358,7 @@ const BOMForm = () => {
                   <th className="px-4 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-32">Unit</th>
                   <th className="px-4 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-36">Price (₹)</th>
                   <th className="px-4 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-32">GST %</th>
+                  <th className="px-4 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-36">GST Amt</th>
                   <th className="px-4 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-36">Total (₹)</th>
                   <th className="px-4 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider w-12"></th>
                 </tr>
@@ -422,7 +427,10 @@ const BOMForm = () => {
                           <option value="28">28%</option>
                         </select>
                       </td>
-                      <td className="p-2 font-semibold text-slate-800 text-center">
+                      <td className="p-2 font-semibold text-indigo-700 text-center">
+                        â‚¹{lineGst.toFixed(2)}
+                      </td>
+                      <td className="p-2 font-semibold text-slate-900 text-center">
                         ₹{lineTotal}
                       </td>
                       <td className="p-2 text-center">

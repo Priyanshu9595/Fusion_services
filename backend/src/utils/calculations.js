@@ -40,7 +40,9 @@ const calculateDocumentTotals = (items, discount = 0) => {
 
 const normalizeGstPercent = (value) => {
     const parsed = Number(value);
+    const allowedRates = [5, 12, 18, 28];
     if (!Number.isFinite(parsed) || parsed <= 0) return 18;
+    if (!allowedRates.includes(parsed)) return 18;
     return parsed;
 };
 
