@@ -9,7 +9,7 @@ const Staff = () => {
 
   const fetchStaff = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/users', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/users`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -28,7 +28,7 @@ const Staff = () => {
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to remove this staff member?')) return;
     try {
-      await fetch(`http://localhost:5000/api/users/${id}`, {
+      await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/users/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

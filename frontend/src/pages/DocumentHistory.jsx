@@ -17,7 +17,7 @@ const DocumentHistory = () => {
       if (search) query.append('search', search);
       if (typeFilter) query.append('type', typeFilter);
 
-      const response = await fetch(`http://localhost:5000/api/documents?${query.toString()}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents?${query.toString()}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -41,7 +41,7 @@ const DocumentHistory = () => {
 
   const handleDownloadPDF = async (docId, docNumber) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/documents/${docId}/pdf`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents/${docId}/pdf`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {

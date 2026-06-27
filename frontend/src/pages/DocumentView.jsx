@@ -12,7 +12,7 @@ const DocumentView = () => {
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/documents/${id}`, {
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents/${id}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -24,7 +24,7 @@ const DocumentView = () => {
   const handleDownloadPDF = async () => {
     setDownloading(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/documents/${id}/pdf`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents/${id}/pdf`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -47,7 +47,7 @@ const DocumentView = () => {
   const handleWhatsAppShare = async () => {
     try {
       // Get the shareable public link from the backend
-      const response = await fetch(`http://localhost:5000/api/documents/${id}/share`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents/${id}/share`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();

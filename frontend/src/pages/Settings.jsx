@@ -12,7 +12,7 @@ const Settings = () => {
   });
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/settings', {
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/settings`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -27,7 +27,7 @@ const Settings = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      const response = await fetch('http://localhost:5000/api/settings', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

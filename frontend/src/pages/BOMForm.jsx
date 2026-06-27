@@ -25,7 +25,7 @@ const BOMForm = () => {
 
   // Fetch customers for dropdown
   useEffect(() => {
-    fetch('http://localhost:5000/api/customers', {
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -70,7 +70,7 @@ const BOMForm = () => {
 
     setAiLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/documents/parse', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents/parse`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -165,7 +165,7 @@ const BOMForm = () => {
         finalCustomerId = existingCustomer.id;
       } else {
         // Create new customer
-        const createRes = await fetch('http://localhost:5000/api/customers', {
+        const createRes = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
           body: JSON.stringify({ name: customerName.trim(), phone: customerPhone.trim(), billing_address: '', shipping_address: '', gstin: '', email: '' })
@@ -175,7 +175,7 @@ const BOMForm = () => {
         finalCustomerId = newCust.id;
       }
 
-      const response = await fetch('http://localhost:5000/api/documents', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/documents`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

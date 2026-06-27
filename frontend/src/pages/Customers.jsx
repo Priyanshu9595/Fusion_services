@@ -18,7 +18,7 @@ const Customers = () => {
   const fetchCustomers = async () => {
     setLoading(true);
     try {
-      const url = search ? `http://localhost:5000/api/customers?search=${search}` : 'http://localhost:5000/api/customers';
+      const url = search ? `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers?search=${search}` : `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers`;
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -59,8 +59,8 @@ const Customers = () => {
     e.preventDefault();
     try {
       const url = editingId 
-        ? `http://localhost:5000/api/customers/${editingId}`
-        : 'http://localhost:5000/api/customers';
+        ? `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers/${editingId}`
+        : `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers`;
       
       const method = editingId ? 'PUT' : 'POST';
 
@@ -87,7 +87,7 @@ const Customers = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this customer?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/customers/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/customers/${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
