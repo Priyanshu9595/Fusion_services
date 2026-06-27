@@ -174,7 +174,7 @@ const Customers = () => {
                       {!c.phone && !c.email && <span className="text-slate-400">-</span>}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end space-x-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex justify-end space-x-2 transition-opacity">
                         <button 
                           onClick={() => handleOpenModal(c)}
                           className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"

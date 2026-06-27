@@ -2617,3 +2617,18 @@ img {
 .nav-dropdown.active .mobile-dropdown-menu {
     display: flex;
 }
+
+
+/* Mobile Responsive Overrides */
+@media (max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr !important; }
+  .project-block.reverse .project-image { order: unset !important; }
+  .mvv-grid { grid-template-columns: 1fr; }
+  .timeline-item { width: 100% !important; left: 0 !important; padding: 0 0 2rem 2.5rem !important; transform: none !important; }
+  .timeline-line { left: 0 !important; }
+  .timeline-dot { left: -11px !important; right: auto !important; }
+  .features-benefits { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+.card-icon-container svg { width: 64px; height: 64px; margin-bottom: 1.5rem; color: var(--color-accent); }
