@@ -301,7 +301,42 @@ const buildSummary = (documentData) => `
 const buildFallbackPdf = (documentData) => {
     const meta = getDocMeta(documentData.documentType);
     const isChallan = documentData.documentType === 'challan';
-    const content = [
+    const pages = [];
+    let page = fallbackPageHeader(documentData, meta, isChallan, true);
+    let y = 582;
+
+    documentData.products.forEach((product) => {
+        if (y - 76 < 112) {
+            pages.push(finishFallbackPage(page, pages.length + 1, false));
+            page = fallbackPageHeader(documentData, meta, isChallan, false);
+            y = 690;
+        }
+
+        page.push(...fallbackProductCard(product, isChallan, y));
+        y -= 86;
+    });
+
+    if (!isChallan) {
+        if (y - 96 < 112) {
+            pages.push(finishFallbackPage(page, pages.length + 1, false));
+            page = fallbackPageHeader(documentData, meta, isChallan, false);
+            y = 690;
+        }
+        page.push(...fallbackTotals(documentData.totals, y - 8));
+        y -= 112;
+    }
+
+    if (y < 112) {
+        pages.push(finishFallbackPage(page, pages.length + 1, false));
+        page = fallbackPageHeader(documentData, meta, isChallan, false);
+    }
+
+    pages.push(finishFallbackPage(page, pages.length + 1, true));
+    return writePdfPages(pages);
+};
+
+const fallbackPageHeader = (documentData, meta, isChallan, includeCustomerCards) => {
+    const commands = [
         '0.10 0.25 0.55 rg',
         ...pdfText(documentData.company.name, 210, 802, 22, true, 42),
         '0.27 0.34 0.43 rg',
@@ -309,7 +344,18 @@ const buildFallbackPdf = (documentData) => {
         ...pdfText(`GSTIN: ${documentData.company.gstin}`, 230, 766, 8, false, 35),
         '0.15 0.39 0.92 RG', '42 752 511 2 re S',
         '0.05 0.09 0.16 rg',
-        ...pdfText(meta.title, 230, 728, 15, true, 30),
+        ...pdfText(meta.title, 230, 728, 15, true, 30)
+    ];
+
+    if (!includeCustomerCards) {
+        commands.push(
+            '0.10 0.25 0.55 rg',
+            ...pdfText('Products Continued', 42, 704, 10, true)
+        );
+        return commands;
+    }
+
+    commands.push(
         '0.98 0.99 1 rg', '42 620 242 82 re f', '0.72 0.78 0.86 RG', '42 620 242 82 re S',
         '0.10 0.25 0.55 rg', ...pdfText(isChallan ? 'SHIP TO' : 'BILLED TO', 56, 682, 9, true),
         '0.05 0.09 0.16 rg', ...pdfText(documentData.customer.name, 56, 662, 12, true, 34),
@@ -319,55 +365,66 @@ const buildFallbackPdf = (documentData) => {
         '0.98 0.99 1 rg', '311 620 242 82 re f', '0.72 0.78 0.86 RG', '311 620 242 82 re S',
         '0.10 0.25 0.55 rg', ...pdfText('DOCUMENT DETAILS', 325, 682, 9, true),
         '0.05 0.09 0.16 rg', ...pdfText(`${meta.numberLabel}: ${documentData.documentNumber}`, 325, 662, 11, true),
-        ...pdfText(`Date: ${documentData.date}`, 325, 645, 8, false),
-        ...fallbackProductCards(documentData.products, isChallan),
-        ...(!isChallan ? fallbackTotals(documentData.totals) : []),
-        '0.45 0.50 0.58 RG', '390 78 150 0.8 re S',
-        '0.05 0.09 0.16 rg', ...pdfText('Authorized Signatory', 414, 62, 9, true),
-        ...pdfText('For Fusion Services', 426, 48, 8, false),
-        '0.40 0.45 0.52 rg', ...pdfText('Generated securely by FusionDocs', 218, 28, 8, false)
-    ].join('\n');
+        ...pdfText(`Date: ${documentData.date}`, 325, 645, 8, false)
+    );
 
-    return writePdf(content);
-};
-
-const fallbackProductCards = (products, isChallan) => {
-    const commands = [];
-    let y = 582;
-    products.slice(0, 7).forEach((product) => {
-        commands.push(
-            '0.99 0.99 1 rg', `42 ${y - 72} 511 72 re f`,
-            '0.72 0.78 0.86 RG', `42 ${y - 72} 511 72 re S`,
-            '0.95 0.97 1 rg', `42 ${y - 22} 511 22 re f`,
-            '0.10 0.25 0.55 rg', ...pdfText(`Product #${product.index}`, 54, y - 8, 8, true),
-            '0.05 0.09 0.16 rg', ...pdfText(product.itemName, 132, y - 8, 9, true, 56),
-            ...pdfText(`HSN Code: ${product.hsnCode}`, 54, y - 36, 8, false),
-            ...pdfText(`Quantity: ${formatQty(product.quantity)} ${product.unit}`, 54, y - 52, 8, false)
-        );
-
-        if (isChallan) {
-            commands.push(...pdfText(`Remarks: ${product.remarks}`, 270, y - 36, 8, false, 36));
-        } else {
-            commands.push(
-                ...pdfText(`Unit Price: ${money(product.unitPrice)}`, 270, y - 36, 8, false, 36),
-                ...pdfText(`GST Rate: ${formatQty(product.gstRate)}%`, 270, y - 52, 8, false, 28),
-                ...pdfText(`Taxable: ${money(product.taxableAmount)}`, 392, y - 36, 8, false, 30),
-                ...pdfText(`Line Total: ${money(product.lineTotal)}`, 392, y - 52, 8, true, 30)
-            );
-        }
-        y -= 84;
-    });
     return commands;
 };
 
-const fallbackTotals = (totals) => ([
-    '0.96 0.98 1 rg', '332 110 221 82 re f', '0.72 0.78 0.86 RG', '332 110 221 82 re S',
-    '0.05 0.09 0.16 rg',
-    ...pdfText('Subtotal', 350, 170, 8, false), ...pdfText(money(totals.subtotal), 452, 170, 8, true),
-    ...pdfText('Total GST', 350, 150, 8, false), ...pdfText(money(totals.totalGST), 452, 150, 8, true),
-    '0.10 0.25 0.55 rg',
-    ...pdfText('Grand Total', 350, 126, 10, true), ...pdfText(money(totals.grandTotal), 440, 126, 10, true),
-]);
+const fallbackProductCard = (product, isChallan, y) => {
+    const commands = [
+        '0.99 0.99 1 rg', `42 ${y - 72} 511 72 re f`,
+        '0.72 0.78 0.86 RG', `42 ${y - 72} 511 72 re S`,
+        '0.95 0.97 1 rg', `42 ${y - 22} 511 22 re f`,
+        '0.10 0.25 0.55 rg', ...pdfText(`Product #${product.index}`, 54, y - 8, 8, true),
+        '0.05 0.09 0.16 rg', ...pdfText(product.itemName, 132, y - 8, 9, true, 56),
+        ...pdfText(`HSN Code: ${product.hsnCode}`, 54, y - 36, 8, false),
+        ...pdfText(`Quantity: ${formatQty(product.quantity)} ${product.unit}`, 54, y - 52, 8, false)
+    ];
+
+    if (isChallan) {
+        commands.push(...pdfText(`Remarks: ${product.remarks}`, 270, y - 36, 8, false, 36));
+    } else {
+        commands.push(
+            ...pdfText(`Unit Price: ${pdfMoney(product.unitPrice)}`, 270, y - 36, 8, false, 36),
+            ...pdfText(`GST Rate: ${formatQty(product.gstRate)}%`, 270, y - 52, 8, false, 28),
+            ...pdfText(`Taxable: ${pdfMoney(product.taxableAmount)}`, 392, y - 36, 8, false, 30),
+            ...pdfText(`Line Total: ${pdfMoney(product.lineTotal)}`, 392, y - 52, 8, true, 30)
+        );
+    }
+
+    return commands;
+};
+
+const fallbackTotals = (totals, topY) => {
+    const y = Math.max(topY, 206);
+    return [
+        '0.96 0.98 1 rg', `332 ${y - 82} 221 82 re f`, '0.72 0.78 0.86 RG', `332 ${y - 82} 221 82 re S`,
+        '0.05 0.09 0.16 rg',
+        ...pdfText('Subtotal', 350, y - 22, 8, false), ...pdfText(pdfMoney(totals.subtotal), 452, y - 22, 8, true),
+        ...pdfText('Total GST', 350, y - 42, 8, false), ...pdfText(pdfMoney(totals.totalGST), 452, y - 42, 8, true),
+        '0.10 0.25 0.55 rg',
+        ...pdfText('Grand Total', 350, y - 66, 10, true), ...pdfText(pdfMoney(totals.grandTotal), 440, y - 66, 10, true),
+    ];
+};
+
+const finishFallbackPage = (commands, pageNumber, includeSignature) => {
+    const footer = [
+        '0.40 0.45 0.52 rg',
+        ...pdfText('Generated securely by FusionDocs', 210, 28, 8, false),
+        ...pdfText(`Page ${pageNumber}`, 516, 28, 8, false)
+    ];
+
+    if (includeSignature) {
+        footer.unshift(
+            '0.45 0.50 0.58 RG', '390 78 150 0.8 re S',
+            '0.05 0.09 0.16 rg', ...pdfText('Authorized Signatory', 414, 62, 9, true),
+            ...pdfText('For Fusion Services', 426, 48, 8, false)
+        );
+    }
+
+    return [...commands, ...footer].join('\n');
+};
 
 const sampleDocumentData = {
     company: {
@@ -429,6 +486,7 @@ const round2 = (value) => Number((Number(value || 0)).toFixed(2));
 const cleanValue = (value) => String(value ?? '').trim() || '-';
 const formatQty = (value) => Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
 const money = (value) => `₹${Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const pdfMoney = (value) => `Rs. ${Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const safeFileName = (value) => String(value).replace(/[^a-z0-9_.-]/gi, '_');
 const truncate = (value, maxLength) => String(value || '').length > maxLength ? `${String(value).slice(0, maxLength - 3)}...` : String(value || '');
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
@@ -440,15 +498,24 @@ const pdfText = (value, x, y, size = 10, bold = false, maxLength = 68) => {
     return ['BT', `${font} ${size} Tf`, `${x} ${y} Td`, `(${escapePdfText(truncate(value, maxLength))}) Tj`, 'ET'];
 };
 
-const writePdf = (content) => {
+const writePdfPages = (pages) => {
+    const safePages = pages.length ? pages : [''];
+    const firstPageObjectId = 5;
+    const pageObjectIds = safePages.map((_, index) => firstPageObjectId + (index * 2));
     const objects = [
         '<< /Type /Catalog /Pages 2 0 R >>',
-        '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-        '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R /F2 6 0 R >> >> /Contents 5 0 R >>',
+        `<< /Type /Pages /Kids [${pageObjectIds.map(id => `${id} 0 R`).join(' ')}] /Count ${safePages.length} >>`,
         '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
-        `<< /Length ${Buffer.byteLength(content)} >>\nstream\n${content}\nendstream`,
         '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>',
     ];
+
+    safePages.forEach((content, index) => {
+        const pageObjectId = pageObjectIds[index];
+        const contentObjectId = pageObjectId + 1;
+        objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentObjectId} 0 R >>`);
+        objects.push(`<< /Length ${Buffer.byteLength(content)} >>\nstream\n${content}\nendstream`);
+    });
+
     let pdf = '%PDF-1.4\n';
     const offsets = [0];
     objects.forEach((object, index) => {
